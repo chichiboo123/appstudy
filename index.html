@@ -144,14 +144,6 @@
   .btn-primary:hover{background:var(--color-primary-dark);}
   .btn-ghost{background:var(--gray-100);color:var(--gray-700);border:1px solid var(--gray-300);}
   .btn-ghost:hover{background:#e9edf3;}
-  .btn-green{background:var(--pastel-green-dark);color:#fff;}
-  .btn-green:hover{filter:brightness(.94);}
-  .btn-pink{background:var(--pastel-pink-dark);color:#fff;}
-  .btn-pink:hover{filter:brightness(.94);}
-  .btn-blue{background:var(--pastel-blue-dark);color:#fff;}
-  .btn-blue:hover{filter:brightness(.94);}
-  .btn-yellow{background:var(--pastel-yellow);color:var(--pastel-yellow-dark);border:1px solid #E9D47B;}
-  .btn-yellow:hover{background:#F8E99A;}
   .btn-danger{background:#FFF0F3;color:var(--pastel-pink-dark);border:1px solid #F3B9C8;}
   .btn-danger:hover{background:#FFE2E9;}
   .btn:focus-visible{outline:3px solid rgba(0,109,210,.4);outline-offset:2px;}
@@ -159,8 +151,20 @@
   .btn-next{margin-left:auto;min-width:150px;}
   .btn-sm{min-height:40px;padding:8px 14px;font-size:15px;}
   .btn-sm .material-icons-outlined{font-size:16px;}
-  .export-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:18px;}
-  @media(min-width:680px){.export-grid{grid-template-columns:repeat(4,1fr);}}
+  /* export icon buttons */
+  .export-section{display:flex;align-items:stretch;margin-top:20px;background:var(--white);
+    border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;}
+  .export-group{flex:1;padding:18px 12px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+  .export-group-label{font-size:11px;font-weight:800;color:var(--ink-soft);letter-spacing:.06em;text-transform:uppercase;}
+  .export-btns{display:flex;gap:8px;}
+  .export-icon-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+    min-width:68px;padding:10px 10px;border:1.5px solid #CFE5FB;border-radius:var(--r-md);
+    background:var(--color-primary-light);color:var(--color-primary);
+    cursor:pointer;font-size:12px;font-weight:700;transition:.18s;line-height:1.2;}
+  .export-icon-btn .material-icons-outlined{font-size:24px;}
+  .export-icon-btn:hover{background:#D0E9FF;border-color:#93C4F0;box-shadow:var(--shadow-sm);}
+  .export-icon-btn:focus-visible{outline:3px solid rgba(0,109,210,.4);outline-offset:2px;}
+  .export-divider{width:1px;background:var(--border);flex-shrink:0;margin:12px 0;}
   .help-note{margin-top:12px;padding:12px 14px;border-radius:var(--r-md);background:var(--color-primary-light);color:var(--ink);font-size:14px;line-height:1.6;}
   .edit-result{margin-top:18px;}
   .er-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
@@ -501,13 +505,24 @@ function viewResult(){
       + '<textarea class="textarea result-textarea" id="resultText" aria-label="결과 텍스트 다듬기">'+esc(buildText())+'</textarea>'
       + '<div class="help-note">문장이 어색하면 위 칸에서 직접 고칠 수 있어요. 고친 내용은 <b>텍스트 복사 · 텍스트 저장</b>에 그대로 담겨요. (이미지는 원래 디자인 그대로 저장돼요.)</div>'
     + '</div>'
-    + '<div class="export-grid">'
-    + '<button class="btn btn-blue btn-export" id="copyTxtBtn"><span class="material-icons-outlined">content_copy</span>텍스트 복사</button>'
-    + '<button class="btn btn-pink btn-export" id="copyImgBtn"><span class="material-icons-outlined">filter_none</span>이미지 복사</button>'
-    + '<button class="btn btn-green btn-export" id="txtBtn"><span class="material-icons-outlined">description</span>텍스트 저장</button>'
-    + '<button class="btn btn-yellow btn-export" id="jpgBtn"><span class="material-icons-outlined">image</span>이미지 저장</button>'
+    + '<div class="export-section" aria-label="내보내기">'
+      + '<div class="export-group">'
+        + '<span class="export-group-label">복사하기</span>'
+        + '<div class="export-btns">'
+          + '<button class="export-icon-btn" id="copyImgBtn" type="button" title="이미지 복사 — 채팅·SNS에 바로 붙여넣기"><span class="material-icons-outlined" aria-hidden="true">filter_none</span>이미지</button>'
+          + '<button class="export-icon-btn" id="copyTxtBtn" type="button" title="텍스트 복사 — 문서에 바로 붙여넣기"><span class="material-icons-outlined" aria-hidden="true">content_copy</span>텍스트</button>'
+        + '</div>'
+      + '</div>'
+      + '<div class="export-divider" aria-hidden="true"></div>'
+      + '<div class="export-group">'
+        + '<span class="export-group-label">파일 저장</span>'
+        + '<div class="export-btns">'
+          + '<button class="export-icon-btn" id="jpgBtn" type="button" title="이미지 저장 — JPG 파일로 다운로드"><span class="material-icons-outlined" aria-hidden="true">image</span>이미지</button>'
+          + '<button class="export-icon-btn" id="txtBtn" type="button" title="텍스트 저장 — TXT 파일로 다운로드"><span class="material-icons-outlined" aria-hidden="true">description</span>텍스트</button>'
+        + '</div>'
+      + '</div>'
     + '</div>'
-    + '<div class="reset-row"><button class="btn btn-danger" id="resetBtn"><span class="material-icons-outlined">restart_alt</span>내용 전체 초기화</button></div>';
+    + '<div class="reset-row"><button class="btn btn-danger btn-sm" id="resetBtn"><span class="material-icons-outlined">restart_alt</span>내용 전체 초기화</button></div>';
 
   return ''
     + '<span class="chip"><span class="material-icons-outlined">workspace_premium</span>결과 · 공유</span>'
