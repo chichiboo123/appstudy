@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>앱은 어떻게 작동할까? — 앱 탐구 연구소</title>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+  :root{
+    --color-primary:#006DD2; --color-primary-dark:#0056A8; --color-primary-light:#E8F3FF;
+    --pastel-blue:#BFD9F2; --pastel-green:#C8EDD9; --pastel-yellow:#FFF3B0; --pastel-pink:#FFD6E0;
+    --pastel-blue-dark:#1A5F8A; --pastel-green-dark:#1A6B47; --pastel-yellow-dark:#7A6000; --pastel-pink-dark:#8A2840;
+    --ink:#2A4D6E; --ink-soft:#5C7A95; --ink-mute:#9BB1C4;
+    --gray-900:#1A1A1A; --gray-700:#404040; --gray-500:#767676; --gray-300:#D8DEE6; --gray-100:#F5F7FA;
+    --white:#FFFFFF; --paper:#FFFEFB; --border:#E2E9F0;
+    --r-sm:8px; --r-md:12px; --r-lg:18px; --r-pill:999px;
+    --sp-xs:4px; --sp-sm:8px; --sp-md:16px; --sp-lg:24px; --sp-xl:40px;
+    --shadow-sm:0 4px 12px rgba(80,130,170,.10); --shadow-md:0 10px 26px rgba(80,130,170,.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  *{font-family:'Pretendard GOV','Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;}
+  body{font-size:16px;color:var(--gray-900);background:var(--paper);min-height:100vh;display:flex;flex-direction:column;
+    background-image:radial-gradient(circle at 12% 8%, #EAF4FB 0, transparent 38%),radial-gradient(circle at 88% 92%, #FFF8E6 0, transparent 40%);}
+  .material-icons-outlined{font-family:'Material Icons Outlined';}
+
+  /* header */
+  header.appbar{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--border);padding:12px clamp(14px,4vw,40px);}
+  .appbar-row{max-width:960px;margin:0 auto;display:flex;align-items:center;gap:12px;}
+  .brand-badge{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#89C4E1,#4FA3CF);
+    display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0;box-shadow:var(--shadow-sm);}
+  .brand-badge .material-icons-outlined{font-size:22px;}
+  .brand-txt h1{font-size:clamp(16px,4vw,20px);color:var(--ink);line-height:1.25;}
+  .brand-txt p{font-size:12px;color:var(--ink-soft);}
+  /* stepper */
+  .stepper{max-width:960px;margin:12px auto 0;display:flex;gap:6px;}
+  .step-dot{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;background:none;border:none;}
+  .step-dot .bar{width:100%;height:6px;border-radius:999px;background:var(--gray-300);transition:.25s;}
+  .step-dot.done .bar{background:var(--pastel-blue);}
+  .step-dot.active .bar{background:var(--color-primary);}
+  .step-dot span{font-size:11px;color:var(--ink-mute);font-weight:600;}
+  .step-dot.active span{color:var(--color-primary);}
+  .step-dot.done span{color:var(--pastel-blue-dark);}
+
+  main{flex:1;width:100%;max-width:960px;margin:0 auto;padding:clamp(16px,4vw,32px);}
+  .stage{background:var(--white);border:1px solid var(--border);border-radius:var(--r-lg);
+    box-shadow:var(--shadow-md);padding:clamp(18px,4vw,34px);animation:pop .3s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes pop{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:var(--r-pill);
+    background:var(--pastel-yellow);color:var(--pastel-yellow-dark);font-weight:700;font-size:13px;}
+  .step-title{font-size:clamp(21px,5vw,28px);color:var(--ink);font-weight:800;margin:12px 0 6px;line-height:1.3;}
+  .step-lead{font-size:15px;color:var(--ink-soft);line-height:1.6;margin-bottom:20px;}
+
+  /* flow banner */
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;justify-content:center;
+    background:var(--color-primary-light);border:1px solid #CFE5FB;border-radius:var(--r-md);padding:14px;margin-bottom:22px;}
+  .flow .pill{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r-pill);
+    font-weight:700;font-size:13px;white-space:nowrap;}
+  .flow .pill .material-icons-outlined{font-size:17px;}
+  .flow .arrow{color:var(--color-primary);font-weight:800;}
+  .p-blue{background:var(--pastel-blue);color:var(--pastel-blue-dark);}
+  .p-bluedeep{background:#A6CDEA;color:#15506F;}
+  .p-yellow{background:var(--pastel-yellow);color:var(--pastel-yellow-dark);}
+  .p-green{background:var(--pastel-green);color:var(--pastel-green-dark);}
+
+  /* teacher prompt box */
+  .ask{background:var(--pastel-yellow);border:1px solid #F0DC8C;border-radius:var(--r-md);padding:14px 16px;margin-bottom:18px;}
+  .ask .ask-h{display:flex;align-items:center;gap:7px;font-weight:800;color:var(--pastel-yellow-dark);font-size:14px;margin-bottom:8px;}
+  .ask ul{list-style:none;display:flex;flex-direction:column;gap:5px;}
+  .ask li{position:relative;padding-left:18px;font-size:14px;color:#6a5410;line-height:1.5;}
+  .ask li::before{content:'';position:absolute;left:4px;top:9px;width:6px;height:6px;border-radius:50%;background:var(--pastel-yellow-dark);}
+
+  details.example{border:1px dashed #Bcd6ee;background:#F4FAFF;border-radius:var(--r-md);padding:0 14px;margin-bottom:18px;}
+  details.example summary{cursor:pointer;list-style:none;padding:12px 0;font-weight:700;color:var(--pastel-blue-dark);
+    font-size:14px;display:flex;align-items:center;gap:7px;}
+  details.example summary::-webkit-details-marker{display:none;}
+  details.example .ex-body{padding:0 0 14px;font-size:14px;color:var(--gray-700);line-height:1.7;}
+  details.example .ex-body b{color:var(--ink);}
+
+  .field{margin-bottom:16px;}
+  .field > label{display:block;font-weight:700;color:var(--ink);font-size:15px;margin-bottom:7px;}
+  .field .hint{font-weight:500;color:var(--ink-mute);font-size:12px;margin-left:4px;}
+  .input,.textarea{width:100%;padding:11px 14px;border:1.5px solid var(--gray-300);border-radius:var(--r-md);
+    font-size:16px;color:var(--gray-900);background:var(--white);outline:none;transition:.15s;resize:vertical;line-height:1.6;}
+  .textarea{min-height:74px;}
+  .input:focus,.textarea:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(0,109,210,.16);}
+  .input::placeholder,.textarea::placeholder{color:var(--ink-mute);}
+  .grid2{display:grid;grid-template-columns:1fr;gap:16px;}
+  @media(min-width:560px){.grid2{grid-template-columns:1fr 1fr;}}
+
+  /* analysis row card */
+  .rowcard{border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:16px;background:var(--paper);position:relative;}
+  .rowcard .rc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .rowcard .rc-title{display:inline-flex;align-items:center;gap:7px;font-weight:800;color:var(--pastel-blue-dark);font-size:15px;}
+  .rowcard .rc-num{width:24px;height:24px;border-radius:50%;background:var(--pastel-blue);color:var(--pastel-blue-dark);
+    display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
+  .icon-btn{background:none;border:none;cursor:pointer;color:var(--gray-500);display:inline-flex;padding:4px;border-radius:8px;}
+  .icon-btn:hover{background:var(--gray-100);color:var(--color-error,#D32F2F);}
+  .step-num-tag{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;
+    background:var(--pastel-blue);color:var(--pastel-blue-dark);font-size:12px;font-weight:800;margin-right:6px;}
+  .addrow{display:inline-flex;align-items:center;gap:6px;background:var(--color-primary-light);color:var(--color-primary);
+    border:1.5px dashed #9fc8ee;border-radius:var(--r-md);padding:11px 16px;font-weight:700;font-size:14px;cursor:pointer;width:100%;justify-content:center;}
+  .addrow:hover{background:#dcecfb;}
+
+  /* live sentence preview */
+  .sentence-box{background:var(--color-primary-light);border:1px solid #CFE5FB;border-radius:var(--r-md);padding:14px 16px;margin-top:6px;}
+  .sentence-box .sb-h{font-size:12px;font-weight:700;color:var(--color-primary);margin-bottom:8px;letter-spacing:.02em;}
+  .sentence-box p{font-size:15px;color:var(--ink);line-height:1.9;}
+  .sentence-box .blank{color:var(--color-primary);font-weight:800;}
+
+  /* buttons / nav */
+  .navbar{display:flex;gap:10px;margin-top:26px;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:12px 18px;border-radius:var(--r-md);
+    font-size:15px;font-weight:700;cursor:pointer;border:none;transition:.18s;white-space:nowrap;}
+  .btn .material-icons-outlined{font-size:19px;}
+  .btn-primary{background:var(--color-primary);color:#fff;box-shadow:var(--shadow-sm);}
+  .btn-primary:hover{background:var(--color-primary-dark);}
+  .btn-ghost{background:var(--gray-100);color:var(--gray-700);border:1px solid var(--gray-300);}
+  .btn-ghost:hover{background:#e9edf3;}
+  .btn-green{background:var(--pastel-green-dark);color:#fff;}
+  .btn-green:hover{filter:brightness(.94);}
+  .btn-pink{background:var(--pastel-pink-dark);color:#fff;}
+  .btn-pink:hover{filter:brightness(.94);}
+  .btn:focus-visible{outline:3px solid rgba(0,109,210,.4);outline-offset:2px;}
+  .grow{flex:1;}
+
+  /* result */
+  .result-card{border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;background:var(--white);}
+  .result-head{background:linear-gradient(135deg,#BFD9F2,#A6CDEA);padding:18px 20px;color:#15506F;}
+  .result-head h3{font-size:19px;font-weight:800;}
+  .result-head .meta{font-size:13px;margin-top:6px;display:flex;flex-wrap:wrap;gap:4px 18px;}
+  .result-body{padding:18px 20px;}
+  .rsec{margin-bottom:18px;}
+  .rsec:last-child{margin-bottom:0;}
+  .rsec h4{display:inline-flex;align-items:center;gap:7px;font-size:15px;font-weight:800;color:var(--ink);margin-bottom:9px;}
+  .rsec .tag{font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;}
+  .kv{display:flex;gap:8px;font-size:14px;line-height:1.6;margin:3px 0;color:var(--gray-700);}
+  .kv b{color:var(--ink);min-width:96px;flex-shrink:0;}
+  .kv .v{color:var(--gray-700);}
+  .mini-analysis{border:1px solid var(--border);border-radius:var(--r-md);padding:10px 12px;margin:8px 0;background:var(--paper);}
+  .mini-analysis .ma-t{font-weight:800;color:var(--pastel-blue-dark);font-size:13px;margin-bottom:6px;}
+  .summ{background:var(--pastel-green);border-radius:var(--r-md);padding:12px 14px;margin-top:8px;}
+  .summ p{font-size:14px;color:var(--pastel-green-dark);line-height:1.9;font-weight:600;}
+  .empty{color:var(--ink-mute);font-style:italic;}
+
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;
+    padding:12px 20px;border-radius:var(--r-pill);font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:60;box-shadow:var(--shadow-md);}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  footer.chichiboo-footer{width:100%;padding:16px 24px;background:var(--gray-100);border-top:1px solid var(--gray-300);text-align:center;margin-top:24px;}
+  .chichiboo-footer a{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--gray-500);text-decoration:none;transition:color .2s;}
+  .chichiboo-footer a:hover{color:var(--color-primary);}
+  .chichiboo-footer .material-icons-outlined{font-size:16px;}
+</style>
+</head>
+<body>
+<header class="appbar">
+  <div class="appbar-row">
+    <div class="brand-badge"><span class="material-icons-outlined">travel_explore</span></div>
+    <div class="brand-txt">
+      <h1>앱 탐구 연구소</h1>
+      <p>앱은 어떻게 작동할까? · 화면 → 행동 → 반응 → 결과</p>
+    </div>
+  </div>
+  <nav class="stepper" id="stepper" aria-label="진행 단계"></nav>
+</header>
+
+<main><div class="stage" id="stage" aria-live="polite"></div></main>
+
+<footer class="chichiboo-footer">
+  <a href="mailto:chichiboo@kakao.com">
+    <span class="material-icons-outlined">auto_stories</span>
+    Created by. 교육뮤지컬 꿈꾸는 치수쌤
+  </a>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ---------------- state ---------------- */
+var STEPS = ["시작", "활동 1", "활동 2", "활동 3", "결과·공유"];
+var data = {
+  appName:"", group:"",
+  story:{ who:"", situation:"", before:"", during:"", after:"" },
+  rows:[ {screen:"", action:"", reaction:"", result:""} ],
+  review:{ good:"", weak:"", improve:"" }
+};
+var current = 0;
+var SAVE_KEY = "chichiboo_app_analysis_v1";
+
+function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(data)); }catch(e){} }
+function load(){ try{ var s=localStorage.getItem(SAVE_KEY); if(s){ var d=JSON.parse(s); if(d&&d.story&&d.rows&&d.review){ data=d; } } }catch(e){} }
+
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function val(s, ph){ s=(s==null?"":String(s)).trim(); return s? esc(s) : '<span class="empty">'+esc(ph||"(작성 안 함)")+'</span>'; }
+function plain(s, ph){ s=(s==null?"":String(s)).trim(); return s? s : (ph||"( )"); }
+
+/* ---------------- stepper ---------------- */
+function renderStepper(){
+  var el = document.getElementById("stepper");
+  el.innerHTML = STEPS.map(function(name,i){
+    var cls = i===current ? "active" : (i<current ? "done" : "");
+    return '<button class="step-dot '+cls+'" data-step="'+i+'" aria-label="'+esc(name)+'">'
+      +'<span class="bar"></span><span>'+esc(name)+'</span></button>';
+  }).join("");
+  Array.prototype.forEach.call(el.querySelectorAll(".step-dot"), function(b){
+    b.addEventListener("click", function(){ goTo(parseInt(b.dataset.step,10)); });
+  });
+}
+
+var flowBanner =
+  '<div class="flow">'
+  +'<span class="pill p-blue"><span class="material-icons-outlined">smartphone</span>화면에 있는 것</span>'
+  +'<span class="arrow">→</span>'
+  +'<span class="pill p-bluedeep"><span class="material-icons-outlined">touch_app</span>사용자의 행동</span>'
+  +'<span class="arrow">→</span>'
+  +'<span class="pill p-yellow"><span class="material-icons-outlined">autorenew</span>앱의 반응</span>'
+  +'<span class="arrow">→</span>'
+  +'<span class="pill p-green"><span class="material-icons-outlined">emoji_events</span>사용자의 결과</span>'
+  +'</div>';
+
+function navHTML(opts){
+  opts = opts || {};
+  var left = current>0 ? '<button class="btn btn-ghost" id="prevBtn"><span class="material-icons-outlined">arrow_back</span>이전</button>' : '';
+  var right = opts.right!=null ? opts.right
+    : '<button class="btn btn-primary grow" id="nextBtn">다음<span class="material-icons-outlined">arrow_forward</span></button>';
+  return '<div class="navbar">'+left+right+'</div>';
+}
+
+/* ---------------- step views ---------------- */
+function viewStart(){
+  return ''
+    + '<span class="chip"><span class="material-icons-outlined">rocket_launch</span>시작하기</span>'
+    + '<h2 class="step-title">내가 고른 앱을 탐정처럼 살펴봐요</h2>'
+    + '<p class="step-lead">앱은 아래 네 가지 흐름으로 움직여요. 이 순서를 기억하며 우리 모둠이 분석할 앱을 정해 볼까요?</p>'
+    + flowBanner
+    + '<div class="grid2">'
+      + '<div class="field"><label for="appName">분석할 앱 이름 <span class="hint">예) 지도 앱, 그림판, 사진첩</span></label>'
+        + '<input class="input" id="appName" type="text" placeholder="우리가 살펴볼 앱은?" value="'+esc(data.appName)+'"/></div>'
+      + '<div class="field"><label for="group">모둠 / 이름 <span class="hint">발표할 때 보여 줄 이름</span></label>'
+        + '<input class="input" id="group" type="text" placeholder="예) 3모둠 · 김치수" value="'+esc(data.group)+'"/></div>'
+    + '</div>'
+    + navHTML();
+}
+
+function viewStory(){
+  var s = data.story;
+  return ''
+    + '<span class="chip"><span class="material-icons-outlined">menu_book</span>활동 1</span>'
+    + '<h2 class="step-title">앱을 사용한 어떤 사람 이야기</h2>'
+    + '<p class="step-lead">앱을 쓰는 사람과 상황을 상상해서, 앱을 쓰기 전부터 쓴 뒤까지를 짧은 이야기로 만들어요.</p>'
+    + '<div class="ask"><div class="ask-h"><span class="material-icons-outlined">record_voice_over</span>선생님이 묻는 질문</div>'
+      + '<ul><li>누가 이 앱을 사용할까요?</li><li>어떤 상황에서 앱을 열까요?</li>'
+      + '<li>앱으로 무엇을 하고 싶을까요?</li><li>앱을 사용한 뒤 무엇이 달라질까요?</li></ul></div>'
+    + '<details class="example"><summary><span class="material-icons-outlined">lightbulb</span>예시 이야기 보기 — 길을 찾는 ‘지우’</summary>'
+      + '<div class="ex-body"><b>지우</b>는 처음 가 보는 ‘햇살도서관’을 못 찾아 길에서 두리번거리고 있었어요. '
+      + '지도 앱을 열어 검색창에 ‘햇살도서관’을 입력했더니, 화면에 길이 나타났어요. 덕분에 지우는 도서관에 무사히 도착했답니다!</div></details>'
+    + '<div class="grid2">'
+      + '<div class="field"><label for="who">누가 사용하나요?</label><input class="input" id="who" type="text" placeholder="예) 길을 찾는 지우" value="'+esc(s.who)+'"/></div>'
+      + '<div class="field"><label for="situation">어떤 상황인가요?</label><input class="input" id="situation" type="text" placeholder="예) 처음 가는 곳을 찾을 때" value="'+esc(s.situation)+'"/></div>'
+    + '</div>'
+    + '<div class="field"><label for="before"><span class="step-num-tag">1</span>앱을 쓰기 전 <span class="hint">어떤 어려움이 있었나요?</span></label>'
+      + '<textarea class="textarea" id="before" placeholder="예) 도서관을 못 찾아 길에서 헤매고 있었어요.">'+esc(s.before)+'</textarea></div>'
+    + '<div class="field"><label for="during"><span class="step-num-tag">2</span>앱을 쓰는 중 <span class="hint">앱으로 무엇을 했나요?</span></label>'
+      + '<textarea class="textarea" id="during" placeholder="예) 지도 앱을 열고 도서관 이름을 검색했어요.">'+esc(s.during)+'</textarea></div>'
+    + '<div class="field"><label for="after"><span class="step-num-tag">3</span>앱을 쓴 뒤, 무엇이 달라졌나요? <span class="hint">어떤 결과를 얻었나요?</span></label>'
+      + '<textarea class="textarea" id="after" placeholder="예) 길이 나타나서 무사히 도착했어요!">'+esc(s.after)+'</textarea></div>'
+    + navHTML();
+}
+
+function rowCardHTML(r, i){
+  var single = data.rows.length<=1;
+  return '<div class="rowcard" data-row="'+i+'">'
+    + '<div class="rc-head"><span class="rc-title"><span class="rc-num">'+(i+1)+'</span>살펴본 화면 '+(i+1)+'</span>'
+      + (single? '' : '<button class="icon-btn" data-del="'+i+'" aria-label="이 화면 삭제"><span class="material-icons-outlined">delete_outline</span></button>')
+    + '</div>'
+    + '<div class="field"><label><span class="step-num-tag">1</span>화면에 무엇이 있나요?</label>'
+      + '<input class="input" data-f="screen" type="text" placeholder="예) 검색창" value="'+esc(r.screen)+'"/></div>'
+    + '<div class="field"><label><span class="step-num-tag">2</span>사용자는 무엇을 하나요?</label>'
+      + '<input class="input" data-f="action" type="text" placeholder="예) 장소 이름을 입력한다" value="'+esc(r.action)+'"/></div>'
+    + '<div class="field"><label><span class="step-num-tag">3</span>앱에서는 어떤 일이 일어나나요?</label>'
+      + '<input class="input" data-f="reaction" type="text" placeholder="예) 관련 장소를 찾아 보여 준다" value="'+esc(r.reaction)+'"/></div>'
+    + '<div class="field" style="margin-bottom:0"><label><span class="step-num-tag">4</span>사용자는 무엇을 얻게 되나요?</label>'
+      + '<input class="input" data-f="result" type="text" placeholder="예) 원하는 장소 정보를 알게 된다" value="'+esc(r.result)+'"/></div>'
+  + '</div>';
+}
+
+function viewAnalysis(){
+  return ''
+    + '<span class="chip"><span class="material-icons-outlined">touch_app</span>활동 2</span>'
+    + '<h2 class="step-title">누르면 어떻게 될까?</h2>'
+    + '<p class="step-lead">앱의 한 화면을 골라 네 가지 질문으로 차근차근 분석해요. 화면을 여러 개 살펴봤다면 추가할 수 있어요.</p>'
+    + '<details class="example"><summary><span class="material-icons-outlined">lightbulb</span>예시 분석 보기 — 지도 앱 검색창</summary>'
+      + '<div class="ex-body"><b>① 화면에 있는 것</b> 검색창 &nbsp;<b>② 사용자가 하는 일</b> 장소 이름을 입력한다<br>'
+      + '<b>③ 앱에서 일어나는 일</b> 관련 장소를 찾아 보여 준다 &nbsp;<b>④ 사용자가 얻는 것</b> 원하는 장소 정보를 알게 된다</div></details>'
+    + '<div id="rows">' + data.rows.map(rowCardHTML).join("") + '</div>'
+    + (data.rows.length<4 ? '<button class="addrow" id="addRow"><span class="material-icons-outlined">add_circle_outline</span>다른 화면도 분석하기</button>' : '')
+    + navHTML();
+}
+
+function sentencePreview(rv){
+  return '<div class="sentence-box"><div class="sb-h">이렇게 정리돼요</div><p>'
+    + '이 앱의 좋은 점은 <span class="blank" id="pv-good">'+plainBlank(rv.good)+'</span> 입니다.<br>'
+    + '<span class="blank" id="pv-weak">'+plainBlank(rv.weak)+'</span> 부분은 조금 아쉽습니다.<br>'
+    + '<span class="blank" id="pv-improve">'+plainBlank(rv.improve)+'</span> 하면 더 좋은 앱이 될 것 같습니다.'
+    + '</p></div>';
+}
+function plainBlank(s){ s=(s==null?"":String(s)).trim(); return s? esc(s) : "_______"; }
+
+function viewReview(){
+  var rv = data.review;
+  return ''
+    + '<span class="chip"><span class="material-icons-outlined">lightbulb</span>활동 3</span>'
+    + '<h2 class="step-title">앱 연구원의 한마디</h2>'
+    + '<p class="step-lead">분석한 내용을 바탕으로 좋은 점과 아쉬운 점을 정리하고, 더 좋은 앱이 될 아이디어를 제안해요.</p>'
+    + '<div class="ask"><div class="ask-h"><span class="material-icons-outlined">record_voice_over</span>선생님이 묻는 질문</div>'
+      + '<ul><li>사용자가 원하는 결과를 쉽게 얻을 수 있었나요?</li><li>잘 만들어졌다고 생각한 부분은 무엇인가요?</li>'
+      + '<li>헷갈리거나 불편한 부분은 무엇인가요?</li><li>무엇을 바꾸면 더 좋은 앱이 될까요?</li></ul></div>'
+    + '<div class="field"><label for="good">이 앱의 <b style="color:var(--pastel-green-dark)">좋은 점</b>은?</label>'
+      + '<input class="input" id="good" type="text" placeholder="예) 길을 빠르게 찾을 수 있는 점" value="'+esc(rv.good)+'"/></div>'
+    + '<div class="field"><label for="weak"><b style="color:var(--pastel-pink-dark)">아쉬운</b> 부분은?</label>'
+      + '<input class="input" id="weak" type="text" placeholder="예) 글씨가 너무 작아 보기 힘든" value="'+esc(rv.weak)+'"/></div>'
+    + '<div class="field"><label for="improve">무엇을 <b style="color:var(--color-primary)">바꾸면</b> 더 좋을까요?</label>'
+      + '<input class="input" id="improve" type="text" placeholder="예) 글씨 크기를 키울 수 있게" value="'+esc(rv.improve)+'"/></div>'
+    + sentencePreview(rv)
+    + navHTML();
+}
+
+/* ---------------- result + exports ---------------- */
+function todayStr(){ var d=new Date(); return d.getFullYear()+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+("0"+d.getDate()).slice(-2); }
+
+function viewResult(){
+  var d=data, s=d.story, rv=d.review;
+  var rowsHTML = d.rows.map(function(r,i){
+    return '<div class="mini-analysis"><div class="ma-t">살펴본 화면 '+(i+1)+'</div>'
+      + '<div class="kv"><b>① 화면에 있는 것</b><span class="v">'+val(r.screen)+'</span></div>'
+      + '<div class="kv"><b>② 사용자가 하는 일</b><span class="v">'+val(r.action)+'</span></div>'
+      + '<div class="kv"><b>③ 앱에서 일어나는 일</b><span class="v">'+val(r.reaction)+'</span></div>'
+      + '<div class="kv"><b>④ 사용자가 얻는 것</b><span class="v">'+val(r.result)+'</span></div></div>';
+  }).join("");
+
+  var card = '<div class="result-card" id="resultCard">'
+    + '<div class="result-head"><h3>앱 분석 탐구 결과물</h3>'
+      + '<div class="meta"><span>📱 분석한 앱 : '+val(d.appName,"(앱 이름 없음)")+'</span><span>👥 '+val(d.group,"(모둠·이름 없음)")+'</span><span>🗓 '+todayStr()+'</span></div></div>'
+    + '<div class="result-body">'
+      + '<div class="rsec"><h4><span class="tag" style="background:var(--pastel-yellow);color:var(--pastel-yellow-dark)">활동 1</span> 앱을 사용한 어떤 사람 이야기</h4>'
+        + '<div class="kv"><b>사용하는 사람</b><span class="v">'+val(s.who)+'</span></div>'
+        + '<div class="kv"><b>어떤 상황</b><span class="v">'+val(s.situation)+'</span></div>'
+        + '<div class="kv"><b>① 쓰기 전</b><span class="v">'+val(s.before)+'</span></div>'
+        + '<div class="kv"><b>② 쓰는 중</b><span class="v">'+val(s.during)+'</span></div>'
+        + '<div class="kv"><b>③ 쓴 뒤</b><span class="v">'+val(s.after)+'</span></div></div>'
+      + '<div class="rsec"><h4><span class="tag" style="background:var(--pastel-blue);color:var(--pastel-blue-dark)">활동 2</span> 누르면 어떻게 될까? — 앱 작동 분석</h4>'+rowsHTML+'</div>'
+      + '<div class="rsec"><h4><span class="tag" style="background:var(--pastel-green);color:var(--pastel-green-dark)">활동 3</span> 앱 연구원의 한마디</h4>'
+        + '<div class="summ"><p>'
+          + '• 이 앱의 좋은 점은 <b>'+plain(rv.good,"________")+'</b> 입니다.<br>'
+          + '• <b>'+plain(rv.weak,"________")+'</b> 부분은 조금 아쉽습니다.<br>'
+          + '• <b>'+plain(rv.improve,"________")+'</b> 하면 더 좋은 앱이 될 것 같습니다.'
+        + '</p></div></div>'
+    + '</div></div>';
+
+  var actions = '<div class="navbar">'
+    + '<button class="btn btn-ghost" id="prevBtn"><span class="material-icons-outlined">arrow_back</span>이전</button>'
+    + '<button class="btn btn-green grow" id="txtBtn"><span class="material-icons-outlined">description</span>TXT 저장</button>'
+    + '<button class="btn btn-pink grow" id="jpgBtn"><span class="material-icons-outlined">image</span>JPG 저장</button>'
+    + '</div>'
+    + '<div class="navbar"><button class="btn btn-ghost grow" id="resetBtn"><span class="material-icons-outlined">restart_alt</span>처음부터 다시 작성</button></div>';
+
+  return ''
+    + '<span class="chip"><span class="material-icons-outlined">workspace_premium</span>결과 · 공유</span>'
+    + '<h2 class="step-title">우리 모둠의 분석 결과물</h2>'
+    + '<p class="step-lead">아래 내용을 확인하고, TXT(글) 또는 JPG(그림)로 저장해 친구·선생님과 공유해요.</p>'
+    + card + actions;
+}
+
+function buildText(){
+  var d=data, s=d.story, rv=d.review, NL="\n", LINE="────────────────────────────";
+  var t=[];
+  t.push("[ 앱 분석 탐구 결과물 ]");
+  t.push("앱은 어떻게 작동할까?  ·  교육뮤지컬 꿈꾸는 치수쌤");
+  t.push("");
+  t.push("• 분석한 앱 : "+plain(d.appName,"( )"));
+  t.push("• 모둠 / 이름 : "+plain(d.group,"( )"));
+  t.push("• 작성일 : "+todayStr());
+  t.push(""); t.push(LINE);
+  t.push("[활동 1] 앱을 사용한 어떤 사람 이야기");
+  t.push("- 사용하는 사람 : "+plain(s.who,"( )"));
+  t.push("- 어떤 상황 : "+plain(s.situation,"( )"));
+  t.push("- 장면 1 (앱을 쓰기 전) : "+plain(s.before,"( )"));
+  t.push("- 장면 2 (앱을 쓰는 중) : "+plain(s.during,"( )"));
+  t.push("- 장면 3 (앱을 쓴 뒤) : "+plain(s.after,"( )"));
+  t.push("");
+  t.push("[활동 2] 누르면 어떻게 될까? — 앱 작동 분석");
+  d.rows.forEach(function(r,i){
+    t.push("■ 살펴본 화면 "+(i+1));
+    t.push("  1) 화면에 있는 것 : "+plain(r.screen,"( )"));
+    t.push("  2) 사용자가 하는 일 : "+plain(r.action,"( )"));
+    t.push("  3) 앱에서 일어나는 일 : "+plain(r.reaction,"( )"));
+    t.push("  4) 사용자가 얻는 것 : "+plain(r.result,"( )"));
+  });
+  t.push("");
+  t.push("[활동 3] 앱 연구원의 한마디");
+  t.push("- 이 앱의 좋은 점은 "+plain(rv.good,"________")+" 입니다.");
+  t.push("- "+plain(rv.weak,"________")+" 부분은 조금 아쉽습니다.");
+  t.push("- "+plain(rv.improve,"________")+" 하면 더 좋은 앱이 될 것 같습니다.");
+  t.push(""); t.push(LINE);
+  t.push("화면에 있는 것 → 사용자의 행동 → 앱의 반응 → 사용자의 결과");
+  t.push("교육뮤지컬 꿈꾸는 치수쌤 | chichiboo@kakao.com");
+  return t.join(NL);
+}
+
+function fileBase(){
+  var raw = (data.appName||"앱분석") + (data.group? "_"+data.group : "");
+  return raw.replace(/[\\\/:*?"<>|]+/g,"").replace(/\s+/g,"_").slice(0,50) || "앱분석_결과물";
+}
+function downloadBlob(blob, filename){
+  var url=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); },200);
+}
+function exportTXT(){
+  downloadBlob(new Blob([buildText()], {type:"text/plain;charset=utf-8"}), fileBase()+".txt");
+  toast("TXT 파일을 저장했어요!");
+}
+
+/* ---- JPG via Canvas (no external library) ---- */
+var FONT='"Pretendard GOV", Pretendard, sans-serif';
+var Cc={ ink:"#2A4D6E", inkSoft:"#5C7A95", inkMute:"#9BB1C4", border:"#E2E9F0", white:"#FFFFFF", cream:"#FFFEFB",
+  pb:"#BFD9F2", pbd:"#1A5F8A", py:"#FFF3B0", pyd:"#7A6000", pg:"#C8EDD9", pgd:"#1A6B47", pp:"#FFD6E0", ppd:"#8A2840",
+  primary:"#006DD2", headTop:"#BFD9F2", headBot:"#A6CDEA" };
+
+function wrapLines(ctx,text,font,maxW){
+  ctx.font=font;
+  var paras=String(text==null?"":text).split("\n"), out=[];
+  for(var pi=0;pi<paras.length;pi++){
+    var p=paras[pi];
+    if(p===""){ out.push(""); continue; }
+    var words=p.split(" "), cur="";
+    for(var wi=0; wi<words.length; wi++){
+      var w=words[wi], test=cur? cur+" "+w : w;
+      if(ctx.measureText(test).width<=maxW){ cur=test; }
+      else{
+        if(cur){ out.push(cur); cur=""; }
+        if(ctx.measureText(w).width>maxW){
+          var c="";
+          for(var ci=0; ci<w.length; ci++){
+            var ch=w[ci];
+            if(ctx.measureText(c+ch).width<=maxW){ c+=ch; }
+            else{ if(c) out.push(c); c=ch; }
+          }
+          cur=c;
+        } else { cur=w; }
+      }
+    }
+    if(cur) out.push(cur);
+  }
+  return out;
+}
+function rr(ctx,x,y,w,h,r){
+  if(ctx.roundRect){ ctx.beginPath(); ctx.roundRect(x,y,w,h,r); return; }
+  ctx.beginPath(); ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+
+function renderResultCanvas(ctx, drawing, W, totalH){
+  var pad=44, x=pad, cw=W-pad*2, y=pad;
+  var fTitle="800 38px "+FONT, fMeta="600 19px "+FONT, fSecH="800 24px "+FONT,
+      fLabel="800 18px "+FONT, fBody="400 22px "+FONT, fSmall="600 17px "+FONT;
+  var bodyLH=33, kvLH=31;
+
+  function measureChunk(fn){ var sy=y, sd=drawing; drawing=false; fn(); var h=y-sy; y=sy; drawing=sd; return h; }
+
+  if(drawing){ ctx.fillStyle=Cc.cream; ctx.fillRect(0,0,W,totalH); }
+
+  /* header band */
+  (function(){
+    var hLines=[];
+    ctx.font=fMeta;
+    var metaParts=["분석한 앱 :  "+plain(data.appName,"( )"),"모둠·이름 :  "+plain(data.group,"( )"),"작성일 :  "+todayStr()];
+    var metaWrapped=[];
+    for(var i=0;i<metaParts.length;i++){ metaWrapped=metaWrapped.concat(wrapLines(ctx,metaParts[i],fMeta,cw-44)); }
+    var hh=24+44+8+metaWrapped.length*27+24;
+    if(drawing){
+      var g=ctx.createLinearGradient(x,y,x+cw,y+hh);
+      g.addColorStop(0,Cc.headTop); g.addColorStop(1,Cc.headBot);
+      rr(ctx,x,y,cw,hh,18); ctx.fillStyle=g; ctx.fill();
+      ctx.fillStyle="#15506F"; ctx.textBaseline="alphabetic"; ctx.textAlign="left";
+      ctx.font=fTitle; ctx.fillText("앱 분석 탐구 결과물", x+24, y+24+30);
+      ctx.font=fMeta; var my=y+24+44+8+18;
+      for(var k=0;k<metaWrapped.length;k++){ ctx.fillText(metaWrapped[k], x+24, my); my+=27; }
+    }
+    y+=hh+22;
+  })();
+
+  /* flow pills */
+  (function(){
+    var items=["화면에 있는 것","사용자의 행동","앱의 반응","사용자의 결과"];
+    var bg=[Cc.pb,"#A6CDEA",Cc.py,Cc.pg], fg=[Cc.pbd,"#15506F",Cc.pyd,Cc.pgd];
+    var ph=42, font="700 18px "+FONT; ctx.font=font;
+    var ws=items.map(function(t){ return Math.ceil(ctx.measureText(t).width)+30; });
+    var arrowW=30, total=ws.reduce(function(a,b){return a+b;},0)+arrowW*3;
+    var scale=1; if(total>cw){ scale=cw/total; }
+    if(drawing){
+      var px=x+(cw-total*scale)/2; ctx.textBaseline="middle";
+      for(var i=0;i<4;i++){
+        var pw=ws[i]*scale;
+        rr(ctx,px,y,pw,ph,21); ctx.fillStyle=bg[i]; ctx.fill();
+        ctx.fillStyle=fg[i]; ctx.font="700 "+Math.round(18*scale)+"px "+FONT; ctx.textAlign="center";
+        ctx.fillText(items[i], px+pw/2, y+ph/2+1); px+=pw;
+        if(i<3){ ctx.fillStyle=Cc.primary; ctx.font="800 22px "+FONT; ctx.fillText("→", px+arrowW*scale/2, y+ph/2); px+=arrowW*scale; }
+      }
+      ctx.textAlign="left"; ctx.textBaseline="alphabetic";
+    }
+    y+=ph+24;
+  })();
+
+  /* helper: section title */
+  function secTitle(tag, tagBg, tagFg, title){
+    var th=34;
+    if(drawing){
+      ctx.font="800 15px "+FONT; var tw=Math.ceil(ctx.measureText(tag).width)+22;
+      rr(ctx,x,y,tw,26,13); ctx.fillStyle=tagBg; ctx.fill();
+      ctx.fillStyle=tagFg; ctx.textBaseline="middle"; ctx.textAlign="left"; ctx.fillText(tag, x+11, y+14);
+      ctx.fillStyle=Cc.ink; ctx.font=fSecH; ctx.textBaseline="alphabetic"; ctx.fillText(title, x+tw+12, y+22);
+    }
+    y+=th+8;
+  }
+  /* helper: key-value row (label bold + wrapped value) */
+  function kv(label, value, ph){
+    var labelW=200;
+    var lines=wrapLines(ctx, plain(value,ph||"( )"), fBody, cw-labelW-40);
+    var blockH=Math.max(kvLH, lines.length*kvLH);
+    if(drawing){
+      ctx.textBaseline="alphabetic"; ctx.textAlign="left";
+      ctx.font=fLabel; ctx.fillStyle=Cc.inkSoft; ctx.fillText(label, x, y+22);
+      ctx.font=fBody; ctx.fillStyle=(String(value||"").trim()? Cc.ink : Cc.inkMute);
+      for(var i=0;i<lines.length;i++){ ctx.fillText(lines[i], x+labelW, y+22+i*kvLH); }
+    }
+    y+=blockH+2;
+  }
+  /* helper: inner mini-card for analysis */
+  function kvAll(r){
+    kv("① 화면에 있는 것", r.screen);
+    kv("② 사용자가 하는 일", r.action);
+    kv("③ 앱에서 일어나는 일", r.reaction);
+    kv("④ 사용자가 얻는 것", r.result);
+  }
+  function miniCard(idx, r){
+    var innerLeft=x+20, startY=y;
+    var innerH=measureChunk(function(){
+      y+=16+26;
+      var sx=x; x=innerLeft; kvAll(r); x=sx;
+      y+=12;
+    });
+    if(drawing){
+      rr(ctx,x,startY,cw,innerH,14); ctx.fillStyle=Cc.white; ctx.fill();
+      ctx.lineWidth=1.5; ctx.strokeStyle=Cc.border; ctx.stroke();
+      ctx.font="800 17px "+FONT; ctx.fillStyle=Cc.pbd; ctx.textBaseline="alphabetic"; ctx.textAlign="left";
+      ctx.fillText("살펴본 화면 "+(idx+1), x+20, startY+16+19);
+    }
+    var sx=x; x=innerLeft;
+    y=startY+16+26;
+    kvAll(r);
+    x=sx;
+    y=startY+innerH+10;
+  }
+
+  /* Section 1 : story */
+  secTitle("활동 1", Cc.py, Cc.pyd, "앱을 사용한 어떤 사람 이야기");
+  (function(){
+    var sx=x; x=sx+4;
+    kv("사용하는 사람", data.story.who);
+    kv("어떤 상황", data.story.situation);
+    kv("① 쓰기 전", data.story.before);
+    kv("② 쓰는 중", data.story.during);
+    kv("③ 쓴 뒤", data.story.after);
+    x=sx; y+=14;
+  })();
+
+  /* Section 2 : analysis */
+  secTitle("활동 2", Cc.pb, Cc.pbd, "누르면 어떻게 될까? — 앱 작동 분석");
+  for(var ri=0; ri<data.rows.length; ri++){ miniCard(ri, data.rows[ri]); }
+  y+=8;
+
+  /* Section 3 : review summary */
+  secTitle("활동 3", Cc.pg, Cc.pgd, "앱 연구원의 한마디");
+  (function(){
+    var rv=data.review;
+    var s1="•  이 앱의 좋은 점은 "+plain(rv.good,"________")+" 입니다.";
+    var s2="•  "+plain(rv.weak,"________")+" 부분은 조금 아쉽습니다.";
+    var s3="•  "+plain(rv.improve,"________")+" 하면 더 좋은 앱이 될 것 같습니다.";
+    var L1=wrapLines(ctx,s1,fBody,cw-40),L2=wrapLines(ctx,s2,fBody,cw-40),L3=wrapLines(ctx,s3,fBody,cw-40);
+    var n=L1.length+L2.length+L3.length;
+    var boxH=16+n*kvLH+ (2*8) +16;
+    var startY=y;
+    if(drawing){
+      rr(ctx,x,startY,cw,boxH,14); ctx.fillStyle=Cc.pg; ctx.fill();
+      ctx.font=fBody; ctx.fillStyle=Cc.pgd; ctx.textBaseline="alphabetic"; ctx.textAlign="left";
+      var yy=startY+16+20; var groups=[L1,L2,L3];
+      for(var gi=0; gi<groups.length; gi++){
+        for(var li=0; li<groups[gi].length; li++){ ctx.fillText(groups[gi][li], x+20, yy); yy+=kvLH; }
+        yy+=8;
+      }
+    }
+    y=startY+boxH+14;
+  })();
+
+  /* footer */
+  (function(){
+    if(drawing){
+      ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+      ctx.font=fSmall; ctx.fillStyle=Cc.inkSoft;
+      ctx.fillText("화면에 있는 것 → 사용자의 행동 → 앱의 반응 → 사용자의 결과", W/2, y+18);
+      ctx.font="700 17px "+FONT; ctx.fillStyle=Cc.pbd;
+      ctx.fillText("교육뮤지컬 꿈꾸는 치수쌤  |  chichiboo@kakao.com", W/2, y+18+28);
+      ctx.textAlign="left";
+    }
+    y+=18+28+16;
+  })();
+
+  return y;
+}
+
+function exportJPG(){
+  var go=function(){
+    var W=960;
+    var meas=document.createElement("canvas"); var mctx=meas.getContext("2d");
+    var totalH=Math.ceil(renderResultCanvas(mctx,false,W,0));
+    var dpr=2;
+    var cv=document.createElement("canvas");
+    cv.width=W*dpr; cv.height=totalH*dpr;
+    var ctx=cv.getContext("2d");
+    ctx.scale(dpr,dpr);
+    renderResultCanvas(ctx,true,W,totalH);
+    cv.toBlob(function(blob){
+      if(!blob){ toast("저장에 실패했어요. 다시 시도해 주세요."); return; }
+      downloadBlob(blob, fileBase()+".jpg");
+      toast("JPG 이미지를 저장했어요!");
+    }, "image/jpeg", 0.95);
+  };
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(go).catch(go); } else { go(); }
+}
+
+/* ---------------- bindings per step ---------------- */
+function bindStart(){
+  bindInput("appName", function(v){ data.appName=v; });
+  bindInput("group", function(v){ data.group=v; });
+}
+function bindStory(){
+  ["who","situation","before","during","after"].forEach(function(id){
+    bindInput(id, function(v){ data.story[id]=v; });
+  });
+}
+function bindAnalysis(){
+  var rowsEl=document.getElementById("rows");
+  Array.prototype.forEach.call(rowsEl.querySelectorAll(".rowcard"), function(rc){
+    var idx=parseInt(rc.dataset.row,10);
+    Array.prototype.forEach.call(rc.querySelectorAll("input[data-f]"), function(inp){
+      inp.addEventListener("input", function(){ data.rows[idx][inp.dataset.f]=inp.value; save(); });
+    });
+    var del=rc.querySelector("[data-del]");
+    if(del){ del.addEventListener("click", function(){ data.rows.splice(idx,1); save(); showStep(); }); }
+  });
+  var add=document.getElementById("addRow");
+  if(add){ add.addEventListener("click", function(){ if(data.rows.length<4){ data.rows.push({screen:"",action:"",reaction:"",result:""}); save(); showStep(); } }); }
+}
+function bindReview(){
+  ["good","weak","improve"].forEach(function(id){
+    bindInput(id, function(v){
+      data.review[id]=v;
+      var pv=document.getElementById("pv-"+id);
+      if(pv){ pv.textContent = v.trim()? v.trim() : "_______"; }
+    });
+  });
+}
+function bindResult(){
+  var t=document.getElementById("txtBtn"); if(t) t.addEventListener("click", exportTXT);
+  var j=document.getElementById("jpgBtn"); if(j) j.addEventListener("click", exportJPG);
+  var r=document.getElementById("resetBtn"); if(r) r.addEventListener("click", function(){
+    if(confirm("작성한 내용을 모두 지우고 처음부터 다시 시작할까요?")){
+      data={ appName:"", group:"", story:{who:"",situation:"",before:"",during:"",after:""}, rows:[{screen:"",action:"",reaction:"",result:""}], review:{good:"",weak:"",improve:""} };
+      save(); current=0; showStep();
+    }
+  });
+}
+function bindInput(id, setter){
+  var el=document.getElementById(id);
+  if(!el) return;
+  el.addEventListener("input", function(){ setter(el.value); save(); });
+}
+
+/* ---------------- controller ---------------- */
+function showStep(){
+  var stage=document.getElementById("stage");
+  var views=[viewStart,viewStory,viewAnalysis,viewReview,viewResult];
+  stage.innerHTML=views[current]();
+  renderStepper();
+  var prev=document.getElementById("prevBtn"); if(prev) prev.addEventListener("click", function(){ goTo(current-1); });
+  var next=document.getElementById("nextBtn"); if(next) next.addEventListener("click", function(){ goTo(current+1); });
+  [bindStart,bindStory,bindAnalysis,bindReview,bindResult][current]();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function goTo(i){ if(i<0||i>=STEPS.length) return; current=i; showStep(); }
+
+var toastTimer=null;
+function toast(msg){
+  var t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.classList.remove("show"); },2200);
+}
+
+load();
+showStep();
+</script>
+</body>
+</html>
