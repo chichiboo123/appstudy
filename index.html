@@ -34,9 +34,9 @@
   .brand-badge .material-icons-outlined{font-size:22px;}
   .brand-txt h1{font-size:clamp(16px,4vw,20px);color:var(--ink);line-height:1.25;}
   .brand-txt p{font-size:12px;color:var(--ink-soft);}
-  .appbar-actions{margin-left:auto;display:flex;align-items:center;gap:8px;position:relative;}
+  .appbar-actions{margin-left:auto;display:flex;align-items:center;gap:8px;position:relative;flex-shrink:0;}
   .save-state{font-size:12px;color:var(--pastel-green-dark);font-weight:700;background:var(--pastel-green);padding:6px 10px;border-radius:var(--r-pill);white-space:nowrap;}
-  .backup-menu{position:absolute;right:34px;top:42px;min-width:150px;background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);
+  .backup-menu{position:absolute;right:0;top:46px;min-width:168px;background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);
     box-shadow:var(--shadow-md);padding:6px;display:none;z-index:50;}
   .backup-menu.open{display:block;}
   .backup-menu button{width:100%;border:none;background:transparent;color:var(--ink);display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;
@@ -45,8 +45,10 @@
   .backup-menu .material-icons-outlined{font-size:17px;}
   /* stepper */
   .stepper{max-width:960px;margin:12px auto 0;display:flex;gap:6px;}
-  .step-dot{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;background:none;border:none;}
+  .step-dot{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;background:none;border:none;border-radius:10px;padding:0 0 4px;}
   .step-dot .bar{width:100%;height:6px;border-radius:999px;background:var(--gray-300);transition:.25s;}
+  .step-dot:hover .bar,.step-dot:focus-visible .bar{box-shadow:0 0 0 3px rgba(0,109,210,.14);}
+  .step-dot:focus-visible{outline:3px solid rgba(0,109,210,.28);outline-offset:3px;}
   .step-dot.done .bar{background:var(--pastel-blue);}
   .step-dot.active .bar{background:var(--color-primary);}
   .step-dot span{font-size:11px;color:var(--ink-mute);font-weight:600;}
@@ -115,8 +117,9 @@
   .algo-hint{display:block;color:var(--ink-mute);font-size:12px;font-weight:600;margin-top:6px;line-height:1.4;}
   .algo-sentence{margin-top:14px;border-radius:var(--r-md);background:var(--color-primary-light);border:1px solid #CFE5FB;padding:12px 14px;color:var(--ink);line-height:1.8;font-size:14px;font-weight:600;}
   .algo-sentence b{color:var(--color-primary);}
-  .icon-btn{background:none;border:none;cursor:pointer;color:var(--gray-500);display:inline-flex;padding:4px;border-radius:8px;}
-  .icon-btn:hover{background:var(--gray-100);color:var(--color-error,#D32F2F);}
+  .icon-btn{background:none;border:none;cursor:pointer;color:var(--gray-500);display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;padding:0;border-radius:10px;}
+  .icon-btn:hover{background:var(--gray-100);color:var(--color-primary);}
+  .icon-btn.danger:hover{color:var(--pastel-pink-dark);background:#FFF0F3;}
   .step-num-tag{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;
     background:var(--pastel-blue);color:var(--pastel-blue-dark);font-size:12px;font-weight:800;margin-right:6px;}
   .addrow{display:inline-flex;align-items:center;gap:6px;background:var(--color-primary-light);color:var(--color-primary);
@@ -155,7 +158,7 @@
   @media(min-width:680px){.export-grid{grid-template-columns:repeat(4,1fr);}}
   .help-note{margin-top:12px;padding:12px 14px;border-radius:var(--r-md);background:var(--color-primary-light);color:var(--ink);font-size:14px;line-height:1.6;}
   .reset-row{display:flex;justify-content:center;margin-top:18px;}
-  @media(max-width:559px){.appbar-row{align-items:flex-start}.appbar-actions{flex-direction:column;align-items:flex-end}.save-state{font-size:11px}.btn{width:100%;}.navbar{flex-wrap:wrap}.step-dot span{font-size:10px}.algo-step{padding:11px}.algo-sentence{font-size:13px}}
+  @media(max-width:559px){header.appbar{padding:10px 12px}.appbar-row{align-items:flex-start;gap:10px}.brand-txt p{display:none}.appbar-actions{gap:4px}.save-state{font-size:11px;padding:5px 8px}.icon-btn{width:34px;height:34px}.backup-menu{top:40px}.btn{width:100%;}.navbar{flex-wrap:wrap}.step-dot span{font-size:10px}.algo-step{padding:11px}.algo-sentence{font-size:13px}}
 
   /* result */
   .result-card{border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;background:var(--white);}
@@ -194,23 +197,13 @@
       <h1>앱 연구소</h1>
       <p>App study · 화면 → 행동 → 반응 → 결과</p>
     </div>
-    <div class="appbar-actions">
-      <span class="save-state" id="saveState">자동 저장 준비</span>
-      <button class="icon-btn" id="backupMenuBtn" type="button" aria-label="백업/복원 메뉴" title="백업/복원"><span class="material-icons-outlined">save</span></button>
-      <button class="icon-btn" id="clearAllBtn" type="button" aria-label="내용 전체 초기화" title="내용 전체 초기화"><span class="material-icons-outlined">delete_sweep</span></button>
+    <div class="appbar-actions" aria-label="저장과 초기화">
+      <span class="save-state" id="saveState" role="status" aria-live="polite">자동 저장 준비</span>
+      <button class="icon-btn" id="backupMenuBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="backupMenu" aria-label="백업/복원 메뉴 열기" title="백업/복원"><span class="material-icons-outlined" aria-hidden="true">save</span></button>
+      <button class="icon-btn danger" id="clearAllBtn" type="button" aria-label="내용 전체 초기화" title="내용 전체 초기화"><span class="material-icons-outlined" aria-hidden="true">delete_sweep</span></button>
       <div class="backup-menu" id="backupMenu" role="menu" aria-label="백업과 복원">
-        <button type="button" id="backupJsonBtn" role="menuitem"><span class="material-icons-outlined">download</span>JSON 백업</button>
-        <button type="button" id="restoreJsonBtn" role="menuitem"><span class="material-icons-outlined">upload_file</span>JSON 복원</button>
-      </div>
-      <input id="restoreJsonInput" type="file" accept="application/json,.json" hidden />
-    </div>
-    <div class="appbar-actions">
-      <span class="save-state" id="saveState">자동 저장 준비</span>
-      <button class="icon-btn" id="backupMenuBtn" type="button" aria-label="백업/복원 메뉴" title="백업/복원"><span class="material-icons-outlined">save</span></button>
-      <button class="icon-btn" id="clearAllBtn" type="button" aria-label="내용 전체 초기화" title="내용 전체 초기화"><span class="material-icons-outlined">delete_sweep</span></button>
-      <div class="backup-menu" id="backupMenu" role="menu" aria-label="백업과 복원">
-        <button type="button" id="backupJsonBtn" role="menuitem"><span class="material-icons-outlined">download</span>JSON 백업</button>
-        <button type="button" id="restoreJsonBtn" role="menuitem"><span class="material-icons-outlined">upload_file</span>JSON 복원</button>
+        <button type="button" id="backupJsonBtn" role="menuitem"><span class="material-icons-outlined" aria-hidden="true">download</span>JSON 백업</button>
+        <button type="button" id="restoreJsonBtn" role="menuitem"><span class="material-icons-outlined" aria-hidden="true">upload_file</span>JSON 복원</button>
       </div>
       <input id="restoreJsonInput" type="file" accept="application/json,.json" hidden />
     </div>
@@ -281,8 +274,13 @@ function restoreJSONFile(file){
   };
   reader.readAsText(file, "utf-8");
 }
-function openBackupMenu(){ var m=document.getElementById("backupMenu"); if(m) m.classList.toggle("open"); }
-function closeBackupMenu(){ var m=document.getElementById("backupMenu"); if(m) m.classList.remove("open"); }
+function setBackupMenuOpen(open){
+  var m=document.getElementById("backupMenu"), b=document.getElementById("backupMenuBtn");
+  if(m) m.classList.toggle("open", !!open);
+  if(b) b.setAttribute("aria-expanded", open ? "true" : "false");
+}
+function openBackupMenu(){ var m=document.getElementById("backupMenu"); setBackupMenuOpen(!(m&&m.classList.contains("open"))); }
+function closeBackupMenu(){ setBackupMenuOpen(false); }
 function bindBackupMenu(){
   var menuBtn=document.getElementById("backupMenuBtn"), backupBtn=document.getElementById("backupJsonBtn"), restoreBtn=document.getElementById("restoreJsonBtn"), input=document.getElementById("restoreJsonInput");
   if(menuBtn){ menuBtn.addEventListener("click", function(e){ e.stopPropagation(); openBackupMenu(); }); }
@@ -290,6 +288,7 @@ function bindBackupMenu(){
   if(restoreBtn && input){ restoreBtn.addEventListener("click", function(){ closeBackupMenu(); input.click(); }); }
   if(input){ input.addEventListener("change", function(){ restoreJSONFile(input.files && input.files[0]); input.value=""; }); }
   document.addEventListener("click", function(e){ var menu=document.getElementById("backupMenu"); if(menu && !menu.contains(e.target) && e.target!==menuBtn){ closeBackupMenu(); } });
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape"){ closeBackupMenu(); } });
 }
 
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
@@ -301,7 +300,7 @@ function renderStepper(){
   var el = document.getElementById("stepper");
   el.innerHTML = STEPS.map(function(name,i){
     var cls = i===current ? "active" : (i<current ? "done" : "");
-    return '<button class="step-dot '+cls+'" data-step="'+i+'" aria-label="'+esc(name)+'">'
+    return '<button class="step-dot '+cls+'" type="button" data-step="'+i+'" aria-label="'+esc(name)+'" '+(i===current?'aria-current="step"':'')+'>'
       +'<span class="bar"></span><span>'+esc(name)+'</span></button>';
   }).join("");
   Array.prototype.forEach.call(el.querySelectorAll(".step-dot"), function(b){
@@ -378,7 +377,7 @@ function rowCardHTML(r, i){
   var single = data.rows.length<=1;
   return '<div class="rowcard" data-row="'+i+'">'
     + '<div class="rc-head"><span class="rc-title"><span class="rc-num">'+(i+1)+'</span>알고리즘 흐름 '+(i+1)+'</span>'
-      + (single? '' : '<button class="icon-btn" data-del="'+i+'" aria-label="이 흐름 삭제"><span class="material-icons-outlined">delete_outline</span></button>')
+      + (single? '' : '<button class="icon-btn danger" type="button" data-del="'+i+'" aria-label="이 흐름 삭제"><span class="material-icons-outlined" aria-hidden="true">delete_outline</span></button>')
     + '</div>'
     + '<div class="algo-card" aria-label="화면에서 결과까지 이어지는 알고리즘 작성틀">'
       + '<div class="algo-step"><label><span class="algo-badge">📱</span>1. 화면에서 찾은 버튼이나 칸</label>'
