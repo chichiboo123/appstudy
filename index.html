@@ -155,9 +155,17 @@
   .btn-danger:hover{background:#FFE2E9;}
   .btn:focus-visible{outline:3px solid rgba(0,109,210,.4);outline-offset:2px;}
   .grow{flex:1;}
+  .btn-next{margin-left:auto;min-width:150px;}
+  .btn-sm{padding:8px 12px;font-size:13px;}
+  .btn-sm .material-icons-outlined{font-size:16px;}
   .export-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:18px;}
   @media(min-width:680px){.export-grid{grid-template-columns:repeat(4,1fr);}}
   .help-note{margin-top:12px;padding:12px 14px;border-radius:var(--r-md);background:var(--color-primary-light);color:var(--ink);font-size:14px;line-height:1.6;}
+  .edit-result{margin-top:18px;}
+  .er-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+  .er-title{display:inline-flex;align-items:center;gap:7px;font-weight:800;color:var(--ink);font-size:15px;}
+  .er-title .material-icons-outlined{font-size:18px;color:var(--color-primary);}
+  .result-textarea{min-height:220px;font-size:14px;line-height:1.7;}
   .reset-row{display:flex;justify-content:center;margin-top:18px;}
   @media(max-width:559px){header.appbar{padding:10px 12px}.appbar-row{align-items:flex-start;gap:10px}.brand-txt p{display:none}.appbar-actions{gap:4px}.save-state{font-size:11px;padding:5px 8px}.icon-btn{width:34px;height:34px}.backup-menu{top:40px}.btn{width:100%;}.navbar{flex-wrap:wrap}.step-dot span{font-size:10px}.algo-step{padding:11px}.algo-sentence{font-size:13px}}
 
@@ -328,7 +336,7 @@ function navHTML(opts){
   opts = opts || {};
   var left = current>0 ? '<button class="btn btn-ghost" id="prevBtn"><span class="material-icons-outlined">arrow_back</span>이전</button>' : '';
   var right = opts.right!=null ? opts.right
-    : '<button class="btn btn-primary grow" id="nextBtn">다음<span class="material-icons-outlined">arrow_forward</span></button>';
+    : '<button class="btn btn-primary btn-next" id="nextBtn">다음<span class="material-icons-outlined">arrow_forward</span></button>';
   return '<div class="navbar">'+left+right+'</div>';
 }
 
@@ -386,11 +394,11 @@ function rowCardHTML(r, i){
     + '</div>'
     + '<div class="algo-card" aria-label="화면에서 결과까지 이어지는 흐름 작성틀">'
       + '<div class="algo-step"><label><span class="algo-badge"><span class="material-icons-outlined" aria-hidden="true">smartphone</span></span>1. 화면에 있는 것</label>'
-        + '<input class="input" data-f="screen" type="text" placeholder="예) 검색창, 저장 버튼, 사진 선택 칸" value="'+esc(r.screen)+'"/>'
+        + '<input class="input" data-f="screen" type="text" placeholder="예) 검색창" value="'+esc(r.screen)+'"/>'
         + '<span class="algo-hint">화면에서 눈에 보이는 것을 하나만 골라요.</span></div>'
       + '<div class="algo-step"><label><span class="algo-badge"><span class="material-icons-outlined" aria-hidden="true">touch_app</span></span>2. 사용자의 행동</label>'
-        + '<input class="input" data-f="action" type="text" placeholder="예) 장소 이름을 입력한다, 저장 버튼을 누른다" value="'+esc(r.action)+'"/>'
-        + '<span class="algo-hint">누른다 · 입력한다 · 고른다처럼 동작으로 써요.</span></div>'
+        + '<input class="input" data-f="action" type="text" placeholder="예) 장소 이름을 입력한다" value="'+esc(r.action)+'"/>'
+        + '<span class="algo-hint">누른다 · 입력한다 · 고른다처럼 동작 한 가지를 써요.</span></div>'
       + '<div class="algo-step"><label><span class="algo-badge"><span class="material-icons-outlined" aria-hidden="true">autorenew</span></span>3. 앱의 반응</label>'
         + '<input class="input" data-f="reaction" type="text" placeholder="예) 관련 장소를 찾아 보여 준다" value="'+esc(r.reaction)+'"/>'
         + '<span class="algo-hint">행동을 한 뒤 앱이 보여 주는 모습을 써요.</span></div>'
@@ -486,7 +494,12 @@ function viewResult(){
     + '</div></div>';
 
   var actions = '<div class="navbar"><button class="btn btn-ghost" id="prevBtn"><span class="material-icons-outlined">arrow_back</span>이전</button></div>'
-    + '<div class="help-note"><b>내보내기 도움말</b><br>복사는 바로 붙여넣기할 때, 저장은 파일로 제출할 때 사용해요.</div>'
+    + '<div class="edit-result">'
+      + '<div class="er-head"><span class="er-title"><span class="material-icons-outlined">edit_note</span>결과 텍스트 다듬기</span>'
+        + '<button class="btn btn-ghost btn-sm" id="resetTextBtn" type="button"><span class="material-icons-outlined">autorenew</span>자동으로 다시 채우기</button></div>'
+      + '<textarea class="textarea result-textarea" id="resultText" aria-label="결과 텍스트 다듬기">'+esc(buildText())+'</textarea>'
+      + '<div class="help-note">문장이 어색하면 위 칸에서 직접 고칠 수 있어요. 고친 내용은 <b>텍스트 복사 · 텍스트 저장</b>에 그대로 담겨요. (이미지는 원래 디자인 그대로 저장돼요.)</div>'
+    + '</div>'
     + '<div class="export-grid">'
     + '<button class="btn btn-blue btn-export" id="copyTxtBtn"><span class="material-icons-outlined">content_copy</span>텍스트 복사</button>'
     + '<button class="btn btn-pink btn-export" id="copyImgBtn"><span class="material-icons-outlined">filter_none</span>이미지 복사</button>'
@@ -548,12 +561,16 @@ function downloadBlob(blob, filename){
   a.href=url; a.download=filename; document.body.appendChild(a); a.click();
   setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); },200);
 }
+function currentText(){
+  var el=document.getElementById("resultText");
+  return (el && String(el.value).trim()!=="") ? el.value : buildText();
+}
 function exportTXT(){
-  downloadBlob(new Blob([buildText()], {type:"text/plain;charset=utf-8"}), fileBase()+".txt");
+  downloadBlob(new Blob([currentText()], {type:"text/plain;charset=utf-8"}), fileBase()+".txt");
   toast("텍스트 파일을 저장했어요!");
 }
 function copyText(){
-  var text=buildText();
+  var text=currentText();
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(text).then(function(){ toast("텍스트를 복사했어요!"); }).catch(function(){ fallbackCopyText(text); });
   } else { fallbackCopyText(text); }
@@ -818,10 +835,10 @@ function bindAnalysis(){
       inp.addEventListener("input", function(){ data.rows[idx][inp.dataset.f]=inp.value; var pv=rc.querySelector("[data-preview]"); if(pv){ pv.innerHTML=algoSentence(data.rows[idx]); } save(); });
     });
     var del=rc.querySelector("[data-del]");
-    if(del){ del.addEventListener("click", function(){ data.rows.splice(idx,1); save(); showStep(); }); }
+    if(del){ del.addEventListener("click", function(){ data.rows.splice(idx,1); save(); showStep(true); }); }
   });
   var add=document.getElementById("addRow");
-  if(add){ add.addEventListener("click", function(){ if(data.rows.length<4){ data.rows.push({screen:"",action:"",reaction:"",result:""}); save(); showStep(); } }); }
+  if(add){ add.addEventListener("click", function(){ if(data.rows.length<4){ data.rows.push({screen:"",action:"",reaction:"",result:""}); save(); showStep(true); var rows=document.getElementById("rows"); if(rows && rows.lastElementChild){ rows.lastElementChild.scrollIntoView({behavior:"smooth",block:"center"}); } } }); }
 }
 function bindReview(){
   ["good","weak","improve"].forEach(function(id){
@@ -838,6 +855,7 @@ function bindResult(){
   var t=document.getElementById("txtBtn"); if(t) t.addEventListener("click", exportTXT);
   var j=document.getElementById("jpgBtn"); if(j) j.addEventListener("click", exportJPG);
   var r=document.getElementById("resetBtn"); if(r) r.addEventListener("click", clearAll);
+  var rt=document.getElementById("resetTextBtn"); if(rt) rt.addEventListener("click", function(){ var el=document.getElementById("resultText"); if(el){ el.value=buildText(); toast("결과 텍스트를 다시 채웠어요."); } });
 }
 function bindInput(id, setter){
   var el=document.getElementById(id);
@@ -846,7 +864,7 @@ function bindInput(id, setter){
 }
 
 /* ---------------- controller ---------------- */
-function showStep(){
+function showStep(keepScroll){
   var stage=document.getElementById("stage");
   var views=[viewStart,viewStory,viewAnalysis,viewReview,viewResult];
   stage.innerHTML=views[current]();
@@ -854,7 +872,7 @@ function showStep(){
   var prev=document.getElementById("prevBtn"); if(prev) prev.addEventListener("click", function(){ goTo(current-1); });
   var next=document.getElementById("nextBtn"); if(next) next.addEventListener("click", function(){ goTo(current+1); });
   [bindStart,bindStory,bindAnalysis,bindReview,bindResult][current]();
-  window.scrollTo({top:0,behavior:"smooth"});
+  if(!keepScroll){ window.scrollTo({top:0,behavior:"smooth"}); }
 }
 function goTo(i){ if(i<0||i>=STEPS.length) return; current=i; save(); showStep(); }
 
