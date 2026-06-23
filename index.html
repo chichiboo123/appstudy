@@ -33,6 +33,8 @@
   .brand-badge .material-icons-outlined{font-size:22px;}
   .brand-txt h1{font-size:clamp(16px,4vw,20px);color:var(--ink);line-height:1.25;}
   .brand-txt p{font-size:12px;color:var(--ink-soft);}
+  .appbar-actions{margin-left:auto;display:flex;align-items:center;gap:8px;}
+  .save-state{font-size:12px;color:var(--pastel-green-dark);font-weight:700;background:var(--pastel-green);padding:6px 10px;border-radius:var(--r-pill);white-space:nowrap;}
   /* stepper */
   .stepper{max-width:960px;margin:12px auto 0;display:flex;gap:6px;}
   .step-dot{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;background:none;border:none;}
@@ -96,6 +98,15 @@
   .rowcard .rc-title{display:inline-flex;align-items:center;gap:7px;font-weight:800;color:var(--pastel-blue-dark);font-size:15px;}
   .rowcard .rc-num{width:24px;height:24px;border-radius:50%;background:var(--pastel-blue);color:var(--pastel-blue-dark);
     display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
+  .algo-card{display:grid;grid-template-columns:1fr;gap:24px;margin-top:6px;}
+  .algo-step{position:relative;border:1.5px solid var(--border);background:var(--white);border-radius:var(--r-md);padding:12px;}
+  .algo-step:not(:last-child)::after{content:"↓";display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;
+    background:var(--color-primary);color:#fff;font-weight:900;position:absolute;left:50%;bottom:-21px;transform:translateX(-50%);z-index:1;box-shadow:var(--shadow-sm);}
+  .algo-step label{display:flex;align-items:center;gap:7px;font-weight:800;color:var(--ink);font-size:14px;margin-bottom:8px;}
+  .algo-badge{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;font-size:18px;background:var(--color-primary-light);}
+  .algo-hint{display:block;color:var(--ink-mute);font-size:12px;font-weight:600;margin-top:6px;line-height:1.4;}
+  .algo-sentence{margin-top:14px;border-radius:var(--r-md);background:var(--color-primary-light);border:1px solid #CFE5FB;padding:12px 14px;color:var(--ink);line-height:1.8;font-size:14px;font-weight:600;}
+  .algo-sentence b{color:var(--color-primary);}
   .icon-btn{background:none;border:none;cursor:pointer;color:var(--gray-500);display:inline-flex;padding:4px;border-radius:8px;}
   .icon-btn:hover{background:var(--gray-100);color:var(--color-error,#D32F2F);}
   .step-num-tag{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;
@@ -114,7 +125,8 @@
   .navbar{display:flex;gap:10px;margin-top:26px;}
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:12px 18px;border-radius:var(--r-md);
     font-size:15px;font-weight:700;cursor:pointer;border:none;transition:.18s;white-space:nowrap;}
-  .btn .material-icons-outlined{font-size:19px;}
+  .btn .material-icons-outlined{font-size:18px;}
+  .btn-export .material-icons-outlined{font-size:16px;}
   .btn-primary{background:var(--color-primary);color:#fff;box-shadow:var(--shadow-sm);}
   .btn-primary:hover{background:var(--color-primary-dark);}
   .btn-ghost{background:var(--gray-100);color:var(--gray-700);border:1px solid var(--gray-300);}
@@ -123,8 +135,19 @@
   .btn-green:hover{filter:brightness(.94);}
   .btn-pink{background:var(--pastel-pink-dark);color:#fff;}
   .btn-pink:hover{filter:brightness(.94);}
+  .btn-blue{background:var(--pastel-blue-dark);color:#fff;}
+  .btn-blue:hover{filter:brightness(.94);}
+  .btn-yellow{background:var(--pastel-yellow);color:var(--pastel-yellow-dark);border:1px solid #E9D47B;}
+  .btn-yellow:hover{background:#F8E99A;}
+  .btn-danger{background:#FFF0F3;color:var(--pastel-pink-dark);border:1px solid #F3B9C8;}
+  .btn-danger:hover{background:#FFE2E9;}
   .btn:focus-visible{outline:3px solid rgba(0,109,210,.4);outline-offset:2px;}
   .grow{flex:1;}
+  .export-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:18px;}
+  @media(min-width:680px){.export-grid{grid-template-columns:repeat(4,1fr);}}
+  .help-note{margin-top:12px;padding:12px 14px;border-radius:var(--r-md);background:var(--color-primary-light);color:var(--ink);font-size:14px;line-height:1.6;}
+  .reset-row{display:flex;justify-content:center;margin-top:18px;}
+  @media(max-width:559px){.appbar-row{align-items:flex-start}.appbar-actions{flex-direction:column;align-items:flex-end}.save-state{font-size:11px}.btn{width:100%;}.navbar{flex-wrap:wrap}.step-dot span{font-size:10px}.algo-step{padding:11px}.algo-sentence{font-size:13px}}
 
   /* result */
   .result-card{border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;background:var(--white);}
@@ -163,6 +186,10 @@
       <h1>앱 탐구 연구소</h1>
       <p>앱은 어떻게 작동할까? · 화면 → 행동 → 반응 → 결과</p>
     </div>
+    <div class="appbar-actions">
+      <span class="save-state" id="saveState">자동 저장 준비</span>
+      <button class="icon-btn" id="clearAllBtn" type="button" aria-label="내용 전체 초기화" title="내용 전체 초기화"><span class="material-icons-outlined">delete_sweep</span></button>
+    </div>
   </div>
   <nav class="stepper" id="stepper" aria-label="진행 단계"></nav>
 </header>
@@ -188,10 +215,18 @@ var data = {
   review:{ good:"", weak:"", improve:"" }
 };
 var current = 0;
+var CURRENT_KEY = "chichiboo_app_analysis_step_v1";
 var SAVE_KEY = "chichiboo_app_analysis_v1";
 
-function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(data)); }catch(e){} }
-function load(){ try{ var s=localStorage.getItem(SAVE_KEY); if(s){ var d=JSON.parse(s); if(d&&d.story&&d.rows&&d.review){ data=d; } } }catch(e){} }
+function updateSaveState(msg){ var el=document.getElementById("saveState"); if(el) el.textContent=msg||"자동 저장됨"; }
+function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(data)); localStorage.setItem(CURRENT_KEY, String(current)); updateSaveState("자동 저장됨"); }catch(e){ updateSaveState("저장 공간 확인 필요"); } }
+function load(){ try{ var s=localStorage.getItem(SAVE_KEY); if(s){ var d=JSON.parse(s); if(d&&d.story&&d.rows&&d.review){ data=d; } } var c=parseInt(localStorage.getItem(CURRENT_KEY),10); if(!isNaN(c)&&c>=0&&c<STEPS.length){ current=c; } }catch(e){} }
+function emptyData(){ return { appName:"", group:"", story:{who:"",situation:"",before:"",during:"",after:""}, rows:[{screen:"",action:"",reaction:"",result:""}], review:{good:"",weak:"",improve:""} }; }
+function clearAll(){
+  if(confirm("작성한 내용을 모두 지울까요? 새로고침해도 복구되지 않아요.")){
+    data=emptyData(); current=0; save(); showStep(); toast("내용을 모두 지웠어요.");
+  }
+}
 
 function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function val(s, ph){ s=(s==null?"":String(s)).trim(); return s? esc(s) : '<span class="empty">'+esc(ph||"(작성 안 함)")+'</span>'; }
@@ -270,31 +305,43 @@ function viewStory(){
     + navHTML();
 }
 
+function algoSentence(r){
+  return '만약 <b>'+plainBlank(r.screen)+'</b> 화면에서 <b>'+plainBlank(r.action)+'</b> 하면,<br>'
+    + '앱은 <b>'+plainBlank(r.reaction)+'</b> 하고, 그래서 사용자는 <b>'+plainBlank(r.result)+'</b>.';
+}
+
 function rowCardHTML(r, i){
   var single = data.rows.length<=1;
   return '<div class="rowcard" data-row="'+i+'">'
-    + '<div class="rc-head"><span class="rc-title"><span class="rc-num">'+(i+1)+'</span>살펴본 화면 '+(i+1)+'</span>'
-      + (single? '' : '<button class="icon-btn" data-del="'+i+'" aria-label="이 화면 삭제"><span class="material-icons-outlined">delete_outline</span></button>')
+    + '<div class="rc-head"><span class="rc-title"><span class="rc-num">'+(i+1)+'</span>알고리즘 흐름 '+(i+1)+'</span>'
+      + (single? '' : '<button class="icon-btn" data-del="'+i+'" aria-label="이 흐름 삭제"><span class="material-icons-outlined">delete_outline</span></button>')
     + '</div>'
-    + '<div class="field"><label><span class="step-num-tag">1</span>화면에 무엇이 있나요?</label>'
-      + '<input class="input" data-f="screen" type="text" placeholder="예) 검색창" value="'+esc(r.screen)+'"/></div>'
-    + '<div class="field"><label><span class="step-num-tag">2</span>사용자는 무엇을 하나요?</label>'
-      + '<input class="input" data-f="action" type="text" placeholder="예) 장소 이름을 입력한다" value="'+esc(r.action)+'"/></div>'
-    + '<div class="field"><label><span class="step-num-tag">3</span>앱에서는 어떤 일이 일어나나요?</label>'
-      + '<input class="input" data-f="reaction" type="text" placeholder="예) 관련 장소를 찾아 보여 준다" value="'+esc(r.reaction)+'"/></div>'
-    + '<div class="field" style="margin-bottom:0"><label><span class="step-num-tag">4</span>사용자는 무엇을 얻게 되나요?</label>'
-      + '<input class="input" data-f="result" type="text" placeholder="예) 원하는 장소 정보를 알게 된다" value="'+esc(r.result)+'"/></div>'
+    + '<div class="algo-card" aria-label="화면에서 결과까지 이어지는 알고리즘 작성틀">'
+      + '<div class="algo-step"><label><span class="algo-badge">📱</span>1. 화면에서 찾은 버튼이나 칸</label>'
+        + '<input class="input" data-f="screen" type="text" placeholder="예) 검색창, 저장 버튼, 사진 선택 칸" value="'+esc(r.screen)+'"/>'
+        + '<span class="algo-hint">눈에 보이는 것을 하나만 고르면 쉬워요.</span></div>'
+      + '<div class="algo-step"><label><span class="algo-badge">👆</span>2. 사용자가 하는 행동</label>'
+        + '<input class="input" data-f="action" type="text" placeholder="예) 장소 이름을 입력한다, 저장 버튼을 누른다" value="'+esc(r.action)+'"/>'
+        + '<span class="algo-hint">누른다 · 입력한다 · 고른다처럼 동작 말로 써요.</span></div>'
+      + '<div class="algo-step"><label><span class="algo-badge">⚙️</span>3. 앱이 처리하는 일</label>'
+        + '<input class="input" data-f="reaction" type="text" placeholder="예) 관련 장소를 찾아 보여 준다" value="'+esc(r.reaction)+'"/>'
+        + '<span class="algo-hint">앱 안에서 자동으로 일어나는 반응을 생각해요.</span></div>'
+      + '<div class="algo-step"><label><span class="algo-badge">🎁</span>4. 사용자가 얻는 결과</label>'
+        + '<input class="input" data-f="result" type="text" placeholder="예) 원하는 장소 정보를 알게 된다" value="'+esc(r.result)+'"/>'
+        + '<span class="algo-hint">마지막에 내가 알게 되거나 할 수 있게 된 것을 써요.</span></div>'
+    + '</div>'
+    + '<div class="algo-sentence" data-preview="'+i+'">'+algoSentence(r)+'</div>'
   + '</div>';
 }
 
 function viewAnalysis(){
   return ''
     + '<span class="chip"><span class="material-icons-outlined">touch_app</span>활동 2</span>'
-    + '<h2 class="step-title">누르면 어떻게 될까?</h2>'
-    + '<p class="step-lead">앱의 한 화면을 골라 네 가지 질문으로 차근차근 분석해요. 화면을 여러 개 살펴봤다면 추가할 수 있어요.</p>'
-    + '<details class="example"><summary><span class="material-icons-outlined">lightbulb</span>예시 분석 보기 — 지도 앱 검색창</summary>'
-      + '<div class="ex-body"><b>① 화면에 있는 것</b> 검색창 &nbsp;<b>② 사용자가 하는 일</b> 장소 이름을 입력한다<br>'
-      + '<b>③ 앱에서 일어나는 일</b> 관련 장소를 찾아 보여 준다 &nbsp;<b>④ 사용자가 얻는 것</b> 원하는 장소 정보를 알게 된다</div></details>'
+    + '<h2 class="step-title">알고리즘처럼 차례대로 써 봐요</h2>'
+    + '<p class="step-lead">앱의 작동을 <b>보이는 것 → 내가 하는 일 → 앱이 하는 일 → 내가 얻는 것</b> 순서로 연결해요. 한 칸에 한 가지씩만 쓰면 문장이 자동으로 만들어져요.</p>'
+    + '<details class="example" open><summary><span class="material-icons-outlined">lightbulb</span>예시 알고리즘 보기 — 지도 앱 검색창</summary>'
+      + '<div class="ex-body"><b>📱 화면</b> 검색창 → <b>👆 행동</b> 장소 이름을 입력한다 → <b>⚙️ 앱 처리</b> 관련 장소를 찾아 보여 준다 → <b>🎁 결과</b> 원하는 장소 정보를 알게 된다<br>'
+      + '<b>문장</b> 만약 검색창에서 장소 이름을 입력하면, 앱은 관련 장소를 찾아 보여 주고, 그래서 사용자는 원하는 장소 정보를 알게 됩니다.</div></details>'
     + '<div id="rows">' + data.rows.map(rowCardHTML).join("") + '</div>'
     + (data.rows.length<4 ? '<button class="addrow" id="addRow"><span class="material-icons-outlined">add_circle_outline</span>다른 화면도 분석하기</button>' : '')
     + navHTML();
@@ -338,7 +385,8 @@ function viewResult(){
       + '<div class="kv"><b>① 화면에 있는 것</b><span class="v">'+val(r.screen)+'</span></div>'
       + '<div class="kv"><b>② 사용자가 하는 일</b><span class="v">'+val(r.action)+'</span></div>'
       + '<div class="kv"><b>③ 앱에서 일어나는 일</b><span class="v">'+val(r.reaction)+'</span></div>'
-      + '<div class="kv"><b>④ 사용자가 얻는 것</b><span class="v">'+val(r.result)+'</span></div></div>';
+      + '<div class="kv"><b>④ 사용자가 얻는 것</b><span class="v">'+val(r.result)+'</span></div>'
+      + '<div class="summ"><p>만약 <b>'+esc(plain(r.screen,"________"))+'</b>에서 <b>'+esc(plain(r.action,"________"))+'</b> 하면, 앱은 <b>'+esc(plain(r.reaction,"________"))+'</b> 하고, 사용자는 <b>'+esc(plain(r.result,"________"))+'</b>.</p></div></div>';
   }).join("");
 
   var card = '<div class="result-card" id="resultCard">'
@@ -351,7 +399,7 @@ function viewResult(){
         + '<div class="kv"><b>① 쓰기 전</b><span class="v">'+val(s.before)+'</span></div>'
         + '<div class="kv"><b>② 쓰는 중</b><span class="v">'+val(s.during)+'</span></div>'
         + '<div class="kv"><b>③ 쓴 뒤</b><span class="v">'+val(s.after)+'</span></div></div>'
-      + '<div class="rsec"><h4><span class="tag" style="background:var(--pastel-blue);color:var(--pastel-blue-dark)">활동 2</span> 누르면 어떻게 될까? — 앱 작동 분석</h4>'+rowsHTML+'</div>'
+      + '<div class="rsec"><h4><span class="tag" style="background:var(--pastel-blue);color:var(--pastel-blue-dark)">활동 2</span> 알고리즘처럼 보는 앱 작동 분석</h4>'+rowsHTML+'</div>'
       + '<div class="rsec"><h4><span class="tag" style="background:var(--pastel-green);color:var(--pastel-green-dark)">활동 3</span> 앱 연구원의 한마디</h4>'
         + '<div class="summ"><p>'
           + '• 이 앱의 좋은 점은 <b>'+plain(rv.good,"________")+'</b> 입니다.<br>'
@@ -360,17 +408,20 @@ function viewResult(){
         + '</p></div></div>'
     + '</div></div>';
 
-  var actions = '<div class="navbar">'
-    + '<button class="btn btn-ghost" id="prevBtn"><span class="material-icons-outlined">arrow_back</span>이전</button>'
-    + '<button class="btn btn-green grow" id="txtBtn"><span class="material-icons-outlined">description</span>TXT 저장</button>'
-    + '<button class="btn btn-pink grow" id="jpgBtn"><span class="material-icons-outlined">image</span>JPG 저장</button>'
+  var actions = '<div class="navbar"><button class="btn btn-ghost" id="prevBtn"><span class="material-icons-outlined">arrow_back</span>이전</button></div>'
+    + '<div class="help-note"><b>내보내기 도움말</b><br>복사는 바로 붙여넣기할 때, 저장은 파일로 제출할 때 사용해요.</div>'
+    + '<div class="export-grid">'
+    + '<button class="btn btn-blue btn-export" id="copyTxtBtn"><span class="material-icons-outlined">content_copy</span>텍스트 복사</button>'
+    + '<button class="btn btn-pink btn-export" id="copyImgBtn"><span class="material-icons-outlined">filter_none</span>이미지 복사</button>'
+    + '<button class="btn btn-green btn-export" id="txtBtn"><span class="material-icons-outlined">description</span>텍스트 저장</button>'
+    + '<button class="btn btn-yellow btn-export" id="jpgBtn"><span class="material-icons-outlined">image</span>이미지 저장</button>'
     + '</div>'
-    + '<div class="navbar"><button class="btn btn-ghost grow" id="resetBtn"><span class="material-icons-outlined">restart_alt</span>처음부터 다시 작성</button></div>';
+    + '<div class="reset-row"><button class="btn btn-danger" id="resetBtn"><span class="material-icons-outlined">restart_alt</span>내용 전체 초기화</button></div>';
 
   return ''
     + '<span class="chip"><span class="material-icons-outlined">workspace_premium</span>결과 · 공유</span>'
     + '<h2 class="step-title">우리 모둠의 분석 결과물</h2>'
-    + '<p class="step-lead">아래 내용을 확인하고, TXT(글) 또는 JPG(그림)로 저장해 친구·선생님과 공유해요.</p>'
+    + '<p class="step-lead">아래 내용을 확인하고, 글·그림을 복사하거나 파일로 저장해 친구·선생님과 공유해요.</p>'
     + card + actions;
 }
 
@@ -391,13 +442,14 @@ function buildText(){
   t.push("- 장면 2 (앱을 쓰는 중) : "+plain(s.during,"( )"));
   t.push("- 장면 3 (앱을 쓴 뒤) : "+plain(s.after,"( )"));
   t.push("");
-  t.push("[활동 2] 누르면 어떻게 될까? — 앱 작동 분석");
+  t.push("[활동 2] 알고리즘처럼 보는 앱 작동 분석");
   d.rows.forEach(function(r,i){
     t.push("■ 살펴본 화면 "+(i+1));
     t.push("  1) 화면에 있는 것 : "+plain(r.screen,"( )"));
     t.push("  2) 사용자가 하는 일 : "+plain(r.action,"( )"));
     t.push("  3) 앱에서 일어나는 일 : "+plain(r.reaction,"( )"));
     t.push("  4) 사용자가 얻는 것 : "+plain(r.result,"( )"));
+    t.push("  → 알고리즘 문장 : 만약 "+plain(r.screen,"( )")+"에서 "+plain(r.action,"( )")+" 하면, 앱은 "+plain(r.reaction,"( )")+" 하고, 사용자는 "+plain(r.result,"( )")+".");
   });
   t.push("");
   t.push("[활동 3] 앱 연구원의 한마디");
@@ -421,7 +473,19 @@ function downloadBlob(blob, filename){
 }
 function exportTXT(){
   downloadBlob(new Blob([buildText()], {type:"text/plain;charset=utf-8"}), fileBase()+".txt");
-  toast("TXT 파일을 저장했어요!");
+  toast("텍스트 파일을 저장했어요!");
+}
+function copyText(){
+  var text=buildText();
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){ toast("텍스트를 복사했어요!"); }).catch(function(){ fallbackCopyText(text); });
+  } else { fallbackCopyText(text); }
+}
+function fallbackCopyText(text){
+  var ta=document.createElement("textarea"); ta.value=text; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.left="-9999px";
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); toast("텍스트를 복사했어요!"); }catch(e){ toast("복사할 수 없어요. 저장을 사용해 주세요."); }
+  document.body.removeChild(ta);
 }
 
 /* ---- JPG via Canvas (no external library) ---- */
@@ -623,24 +687,39 @@ function renderResultCanvas(ctx, drawing, W, totalH){
   return y;
 }
 
+function makeResultCanvas(){
+  var W=960;
+  var meas=document.createElement("canvas"); var mctx=meas.getContext("2d");
+  var totalH=Math.ceil(renderResultCanvas(mctx,false,W,0));
+  var dpr=2;
+  var cv=document.createElement("canvas");
+  cv.width=W*dpr; cv.height=totalH*dpr;
+  var ctx=cv.getContext("2d");
+  ctx.scale(dpr,dpr);
+  renderResultCanvas(ctx,true,W,totalH);
+  return cv;
+}
+function withResultCanvas(fn){
+  var go=function(){ fn(makeResultCanvas()); };
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(go).catch(go); } else { go(); }
+}
 function exportJPG(){
-  var go=function(){
-    var W=960;
-    var meas=document.createElement("canvas"); var mctx=meas.getContext("2d");
-    var totalH=Math.ceil(renderResultCanvas(mctx,false,W,0));
-    var dpr=2;
-    var cv=document.createElement("canvas");
-    cv.width=W*dpr; cv.height=totalH*dpr;
-    var ctx=cv.getContext("2d");
-    ctx.scale(dpr,dpr);
-    renderResultCanvas(ctx,true,W,totalH);
+  withResultCanvas(function(cv){
     cv.toBlob(function(blob){
       if(!blob){ toast("저장에 실패했어요. 다시 시도해 주세요."); return; }
       downloadBlob(blob, fileBase()+".jpg");
       toast("JPG 이미지를 저장했어요!");
     }, "image/jpeg", 0.95);
-  };
-  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(go).catch(go); } else { go(); }
+  });
+}
+function copyImage(){
+  if(!(navigator.clipboard && window.ClipboardItem)){ toast("이미지 복사를 지원하지 않아 이미지 저장을 사용해 주세요."); return; }
+  withResultCanvas(function(cv){
+    cv.toBlob(function(blob){
+      if(!blob){ toast("이미지 만들기에 실패했어요."); return; }
+      navigator.clipboard.write([new ClipboardItem({"image/png": blob})]).then(function(){ toast("이미지를 복사했어요!"); }).catch(function(){ toast("이미지 복사가 막혔어요. 이미지 저장을 사용해 주세요."); });
+    }, "image/png");
+  });
 }
 
 /* ---------------- bindings per step ---------------- */
@@ -658,7 +737,7 @@ function bindAnalysis(){
   Array.prototype.forEach.call(rowsEl.querySelectorAll(".rowcard"), function(rc){
     var idx=parseInt(rc.dataset.row,10);
     Array.prototype.forEach.call(rc.querySelectorAll("input[data-f]"), function(inp){
-      inp.addEventListener("input", function(){ data.rows[idx][inp.dataset.f]=inp.value; save(); });
+      inp.addEventListener("input", function(){ data.rows[idx][inp.dataset.f]=inp.value; var pv=rc.querySelector("[data-preview]"); if(pv){ pv.innerHTML=algoSentence(data.rows[idx]); } save(); });
     });
     var del=rc.querySelector("[data-del]");
     if(del){ del.addEventListener("click", function(){ data.rows.splice(idx,1); save(); showStep(); }); }
@@ -676,14 +755,11 @@ function bindReview(){
   });
 }
 function bindResult(){
+  var ct=document.getElementById("copyTxtBtn"); if(ct) ct.addEventListener("click", copyText);
+  var ci=document.getElementById("copyImgBtn"); if(ci) ci.addEventListener("click", copyImage);
   var t=document.getElementById("txtBtn"); if(t) t.addEventListener("click", exportTXT);
   var j=document.getElementById("jpgBtn"); if(j) j.addEventListener("click", exportJPG);
-  var r=document.getElementById("resetBtn"); if(r) r.addEventListener("click", function(){
-    if(confirm("작성한 내용을 모두 지우고 처음부터 다시 시작할까요?")){
-      data={ appName:"", group:"", story:{who:"",situation:"",before:"",during:"",after:""}, rows:[{screen:"",action:"",reaction:"",result:""}], review:{good:"",weak:"",improve:""} };
-      save(); current=0; showStep();
-    }
-  });
+  var r=document.getElementById("resetBtn"); if(r) r.addEventListener("click", clearAll);
 }
 function bindInput(id, setter){
   var el=document.getElementById(id);
@@ -702,7 +778,7 @@ function showStep(){
   [bindStart,bindStory,bindAnalysis,bindReview,bindResult][current]();
   window.scrollTo({top:0,behavior:"smooth"});
 }
-function goTo(i){ if(i<0||i>=STEPS.length) return; current=i; showStep(); }
+function goTo(i){ if(i<0||i>=STEPS.length) return; current=i; save(); showStep(); }
 
 var toastTimer=null;
 function toast(msg){
@@ -712,6 +788,8 @@ function toast(msg){
 
 load();
 showStep();
+var clearBtn=document.getElementById("clearAllBtn"); if(clearBtn) clearBtn.addEventListener("click", clearAll);
+updateSaveState("자동 저장 켜짐");
 </script>
 </body>
 </html>
