@@ -204,6 +204,16 @@
       </div>
       <input id="restoreJsonInput" type="file" accept="application/json,.json" hidden />
     </div>
+    <div class="appbar-actions">
+      <span class="save-state" id="saveState">자동 저장 준비</span>
+      <button class="icon-btn" id="backupMenuBtn" type="button" aria-label="백업/복원 메뉴" title="백업/복원"><span class="material-icons-outlined">save</span></button>
+      <button class="icon-btn" id="clearAllBtn" type="button" aria-label="내용 전체 초기화" title="내용 전체 초기화"><span class="material-icons-outlined">delete_sweep</span></button>
+      <div class="backup-menu" id="backupMenu" role="menu" aria-label="백업과 복원">
+        <button type="button" id="backupJsonBtn" role="menuitem"><span class="material-icons-outlined">download</span>JSON 백업</button>
+        <button type="button" id="restoreJsonBtn" role="menuitem"><span class="material-icons-outlined">upload_file</span>JSON 복원</button>
+      </div>
+      <input id="restoreJsonInput" type="file" accept="application/json,.json" hidden />
+    </div>
   </div>
   <nav class="stepper" id="stepper" aria-label="진행 단계"></nav>
 </header>
