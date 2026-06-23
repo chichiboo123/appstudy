@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="App study favicon">
+  <rect width="64" height="64" rx="16" fill="#E8F3FF"/>
+  <rect x="16" y="8" width="32" height="48" rx="8" fill="#006DD2"/>
+  <rect x="20" y="14" width="24" height="34" rx="4" fill="#FFFFFF"/>
+  <circle cx="32" cy="52" r="2.5" fill="#FFFFFF"/>
+  <path d="M24 31h16M24 37h10" stroke="#1A5F8A" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="26" cy="23" r="4" fill="#FFF3B0"/>
+  <circle cx="38" cy="23" r="4" fill="#C8EDD9"/>
+</svg>

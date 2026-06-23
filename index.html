@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>앱은 어떻게 작동할까? — 앱 탐구 연구소</title>
+<title>앱 연구소 · App study</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 <style>
@@ -190,8 +191,18 @@
   <div class="appbar-row">
     <div class="brand-badge"><span class="material-icons-outlined">travel_explore</span></div>
     <div class="brand-txt">
-      <h1>앱 탐구 연구소</h1>
-      <p>앱은 어떻게 작동할까? · 화면 → 행동 → 반응 → 결과</p>
+      <h1>앱 연구소</h1>
+      <p>App study · 화면 → 행동 → 반응 → 결과</p>
+    </div>
+    <div class="appbar-actions">
+      <span class="save-state" id="saveState">자동 저장 준비</span>
+      <button class="icon-btn" id="backupMenuBtn" type="button" aria-label="백업/복원 메뉴" title="백업/복원"><span class="material-icons-outlined">save</span></button>
+      <button class="icon-btn" id="clearAllBtn" type="button" aria-label="내용 전체 초기화" title="내용 전체 초기화"><span class="material-icons-outlined">delete_sweep</span></button>
+      <div class="backup-menu" id="backupMenu" role="menu" aria-label="백업과 복원">
+        <button type="button" id="backupJsonBtn" role="menuitem"><span class="material-icons-outlined">download</span>JSON 백업</button>
+        <button type="button" id="restoreJsonBtn" role="menuitem"><span class="material-icons-outlined">upload_file</span>JSON 복원</button>
+      </div>
+      <input id="restoreJsonInput" type="file" accept="application/json,.json" hidden />
     </div>
     <div class="appbar-actions">
       <span class="save-state" id="saveState">자동 저장 준비</span>
@@ -242,7 +253,7 @@ function clearAll(){
 }
 
 function backupPayload(){
-  return { app:"appstudy", version:2, exportedAt:new Date().toISOString(), current:current, data:data };
+  return { app:"App study", version:2, exportedAt:new Date().toISOString(), current:current, data:data };
 }
 function exportJSON(){
   downloadBlob(new Blob([JSON.stringify(backupPayload(), null, 2)], {type:"application/json;charset=utf-8"}), fileBase()+"_backup.json");
@@ -482,7 +493,7 @@ function buildText(){
   var d=data, s=d.story, rv=d.review, NL="\n", LINE="────────────────────────────";
   var t=[];
   t.push("[ 앱 분석 탐구 결과물 ]");
-  t.push("앱은 어떻게 작동할까?  ·  교육뮤지컬 꿈꾸는 치수쌤");
+  t.push("앱 연구소 · App study  ·  교육뮤지컬 꿈꾸는 치수쌤");
   t.push("");
   t.push("• 분석한 앱 : "+plain(d.appName,"( )"));
   t.push("• 모둠 / 이름 : "+plain(d.group,"( )"));
