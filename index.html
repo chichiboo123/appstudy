@@ -36,16 +36,16 @@
   .brand-txt p{font-size:12px;color:var(--ink-soft);}
   .appbar-actions{margin-left:auto;display:flex;align-items:center;gap:8px;position:relative;flex-shrink:0;}
   .save-state{font-size:12px;color:var(--pastel-green-dark);font-weight:700;background:var(--pastel-green);padding:6px 10px;border-radius:var(--r-pill);white-space:nowrap;}
-  .backup-menu{position:absolute;right:0;top:46px;min-width:168px;background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);
+  .backup-menu{position:absolute;right:0;top:52px;min-width:168px;background:var(--white);border:1px solid var(--border);border-radius:var(--r-md);
     box-shadow:var(--shadow-md);padding:6px;display:none;z-index:50;}
   .backup-menu.open{display:block;}
-  .backup-menu button{width:100%;border:none;background:transparent;color:var(--ink);display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;
-    font-weight:800;font-size:14px;cursor:pointer;text-align:left;}
+  .backup-menu button{width:100%;border:none;background:transparent;color:var(--ink);display:flex;align-items:center;gap:8px;min-height:44px;padding:10px 12px;border-radius:10px;
+    font-weight:800;font-size:15px;cursor:pointer;text-align:left;}
   .backup-menu button:hover,.backup-menu button:focus-visible{background:var(--color-primary-light);outline:none;}
   .backup-menu .material-icons-outlined{font-size:17px;}
   /* stepper */
   .stepper{max-width:960px;margin:12px auto 0;display:flex;gap:6px;}
-  .step-dot{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;background:none;border:none;border-radius:10px;padding:0 0 4px;}
+  .step-dot{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:44px;cursor:pointer;background:none;border:none;border-radius:10px;padding:4px 2px;}
   .step-dot .bar{width:100%;height:6px;border-radius:999px;background:var(--gray-300);transition:.25s;}
   .step-dot:hover .bar,.step-dot:focus-visible .bar{box-shadow:0 0 0 3px rgba(0,109,210,.14);}
   .step-dot:focus-visible{outline:3px solid rgba(0,109,210,.28);outline-offset:3px;}
@@ -94,7 +94,7 @@
   .field{margin-bottom:16px;}
   .field > label{display:block;font-weight:700;color:var(--ink);font-size:15px;margin-bottom:7px;}
   .field .hint{font-weight:500;color:var(--ink-mute);font-size:12px;margin-left:4px;}
-  .input,.textarea{width:100%;padding:11px 14px;border:1.5px solid var(--gray-300);border-radius:var(--r-md);
+  .input,.textarea{width:100%;min-height:48px;padding:12px 14px;border:1.5px solid var(--gray-300);border-radius:var(--r-md);
     font-size:16px;color:var(--gray-900);background:var(--white);outline:none;transition:.15s;resize:vertical;line-height:1.6;}
   .textarea{min-height:74px;}
   .input:focus,.textarea:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px rgba(0,109,210,.16);}
@@ -118,13 +118,14 @@
   .algo-hint{display:block;color:var(--ink-mute);font-size:12px;font-weight:600;margin-top:6px;line-height:1.4;}
   .algo-sentence{margin-top:14px;border-radius:var(--r-md);background:var(--color-primary-light);border:1px solid #CFE5FB;padding:12px 14px;color:var(--ink);line-height:1.8;font-size:14px;font-weight:600;}
   .algo-sentence b{color:var(--color-primary);}
-  .icon-btn{background:none;border:none;cursor:pointer;color:var(--gray-500);display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;padding:0;border-radius:10px;}
+  .icon-btn{background:none;border:none;cursor:pointer;color:var(--gray-500);display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;border-radius:12px;}
   .icon-btn:hover{background:var(--gray-100);color:var(--color-primary);}
   .icon-btn.danger:hover{color:var(--pastel-pink-dark);background:#FFF0F3;}
   .step-num-tag{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;
     background:var(--pastel-blue);color:var(--pastel-blue-dark);font-size:12px;font-weight:800;margin-right:6px;}
   .addrow{display:inline-flex;align-items:center;gap:6px;background:var(--color-primary-light);color:var(--color-primary);
-    border:1.5px dashed #9fc8ee;border-radius:var(--r-md);padding:11px 16px;font-weight:700;font-size:14px;cursor:pointer;width:100%;justify-content:center;}
+    border:1.5px dashed #9fc8ee;border-radius:var(--r-md);min-height:48px;padding:12px 16px;font-weight:700;font-size:15px;cursor:pointer;width:100%;justify-content:center;}
+  .addrow:focus-visible{outline:3px solid rgba(0,109,210,.4);outline-offset:2px;}
   .addrow:hover{background:#dcecfb;}
 
   /* live sentence preview */
@@ -135,8 +136,8 @@
 
   /* buttons / nav */
   .navbar{display:flex;gap:10px;margin-top:26px;}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:12px 18px;border-radius:var(--r-md);
-    font-size:15px;font-weight:700;cursor:pointer;border:none;transition:.18s;white-space:nowrap;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 20px;border-radius:var(--r-md);
+    font-size:16px;font-weight:700;cursor:pointer;border:none;transition:.18s;white-space:nowrap;}
   .btn .material-icons-outlined{font-size:18px;}
   .btn-export .material-icons-outlined{font-size:16px;}
   .btn-primary{background:var(--color-primary);color:#fff;box-shadow:var(--shadow-sm);}
@@ -156,7 +157,7 @@
   .btn:focus-visible{outline:3px solid rgba(0,109,210,.4);outline-offset:2px;}
   .grow{flex:1;}
   .btn-next{margin-left:auto;min-width:150px;}
-  .btn-sm{padding:8px 12px;font-size:13px;}
+  .btn-sm{min-height:40px;padding:8px 14px;font-size:15px;}
   .btn-sm .material-icons-outlined{font-size:16px;}
   .export-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:18px;}
   @media(min-width:680px){.export-grid{grid-template-columns:repeat(4,1fr);}}
@@ -167,7 +168,7 @@
   .er-title .material-icons-outlined{font-size:18px;color:var(--color-primary);}
   .result-textarea{min-height:220px;font-size:14px;line-height:1.7;}
   .reset-row{display:flex;justify-content:center;margin-top:18px;}
-  @media(max-width:559px){header.appbar{padding:10px 12px}.appbar-row{align-items:flex-start;gap:10px}.brand-txt p{display:none}.appbar-actions{gap:4px}.save-state{font-size:11px;padding:5px 8px}.icon-btn{width:34px;height:34px}.backup-menu{top:40px}.btn{width:100%;}.navbar{flex-wrap:wrap}.step-dot span{font-size:10px}.algo-step{padding:11px}.algo-sentence{font-size:13px}}
+  @media(max-width:559px){header.appbar{padding:10px 12px}.appbar-row{align-items:flex-start;gap:10px}.brand-txt p{display:none}.appbar-actions{gap:4px}.save-state{font-size:11px;padding:5px 8px}.backup-menu{top:50px}.btn{width:100%;}.btn-next{min-width:0}.navbar{flex-wrap:wrap}.step-dot span{font-size:10px}.algo-step{padding:11px}.algo-sentence{font-size:13px}}
 
   /* result */
   .result-card{border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;background:var(--white);}
@@ -344,7 +345,7 @@ function navHTML(opts){
 function viewStart(){
   return ''
     + '<span class="chip"><span class="material-icons-outlined">rocket_launch</span>시작하기</span>'
-    + '<h2 class="step-title">내가 고른 앱을 탐정처럼 살펴봐요</h2>'
+    + '<h2 class="step-title">앱 연구원이 되어 내가 고른 앱을 살펴봐요</h2>'
     + '<p class="step-lead">앱은 아래 네 가지 흐름으로 움직여요. 이 순서를 기억하며 우리 모둠이 분석할 앱을 정해 볼까요?</p>'
     + flowBanner
     + '<div class="grid2">'
@@ -519,7 +520,7 @@ function buildText(){
   var d=data, s=d.story, rv=d.review, NL="\n", LINE="────────────────────────────";
   var t=[];
   t.push("[ 앱 분석 탐구 결과물 ]");
-  t.push("앱 연구소 · App study  ·  교육뮤지컬 꿈꾸는 치수쌤");
+  t.push("앱 연구소 · App study");
   t.push("");
   t.push("• 분석한 앱 : "+plain(d.appName,"( )"));
   t.push("• 모둠 / 이름 : "+plain(d.group,"( )"));
@@ -548,7 +549,6 @@ function buildText(){
   t.push("- "+plain(rv.improve,"________")+" 하면 더 좋은 앱이 될 것 같습니다.");
   t.push(""); t.push(LINE);
   t.push("화면에 있는 것 → 사용자의 행동 → 앱의 반응 → 사용자의 결과");
-  t.push("교육뮤지컬 꿈꾸는 치수쌤 | litt.ly/chichiboo");
   return t.join(NL);
 }
 
@@ -772,11 +772,9 @@ function renderResultCanvas(ctx, drawing, W, totalH){
       ctx.textAlign="center"; ctx.textBaseline="alphabetic";
       ctx.font=fSmall; ctx.fillStyle=Cc.inkSoft;
       ctx.fillText("화면에 있는 것 → 사용자의 행동 → 앱의 반응 → 사용자의 결과", W/2, y+18);
-      ctx.font="700 17px "+FONT; ctx.fillStyle=Cc.pbd;
-      ctx.fillText("교육뮤지컬 꿈꾸는 치수쌤  |  litt.ly/chichiboo", W/2, y+18+28);
       ctx.textAlign="left";
     }
-    y+=18+28+16;
+    y+=18+16;
   })();
 
   return y;
