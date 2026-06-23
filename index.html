@@ -98,6 +98,15 @@
   .rowcard .rc-title{display:inline-flex;align-items:center;gap:7px;font-weight:800;color:var(--pastel-blue-dark);font-size:15px;}
   .rowcard .rc-num{width:24px;height:24px;border-radius:50%;background:var(--pastel-blue);color:var(--pastel-blue-dark);
     display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;}
+  .algo-card{display:grid;grid-template-columns:1fr;gap:24px;margin-top:6px;}
+  .algo-step{position:relative;border:1.5px solid var(--border);background:var(--white);border-radius:var(--r-md);padding:12px;}
+  .algo-step:not(:last-child)::after{content:"↓";display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;
+    background:var(--color-primary);color:#fff;font-weight:900;position:absolute;left:50%;bottom:-21px;transform:translateX(-50%);z-index:1;box-shadow:var(--shadow-sm);}
+  .algo-step label{display:flex;align-items:center;gap:7px;font-weight:800;color:var(--ink);font-size:14px;margin-bottom:8px;}
+  .algo-badge{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;font-size:18px;background:var(--color-primary-light);}
+  .algo-hint{display:block;color:var(--ink-mute);font-size:12px;font-weight:600;margin-top:6px;line-height:1.4;}
+  .algo-sentence{margin-top:14px;border-radius:var(--r-md);background:var(--color-primary-light);border:1px solid #CFE5FB;padding:12px 14px;color:var(--ink);line-height:1.8;font-size:14px;font-weight:600;}
+  .algo-sentence b{color:var(--color-primary);}
   .icon-btn{background:none;border:none;cursor:pointer;color:var(--gray-500);display:inline-flex;padding:4px;border-radius:8px;}
   .icon-btn:hover{background:var(--gray-100);color:var(--color-error,#D32F2F);}
   .step-num-tag{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;
@@ -138,7 +147,7 @@
   @media(min-width:680px){.export-grid{grid-template-columns:repeat(4,1fr);}}
   .help-note{margin-top:12px;padding:12px 14px;border-radius:var(--r-md);background:var(--color-primary-light);color:var(--ink);font-size:14px;line-height:1.6;}
   .reset-row{display:flex;justify-content:center;margin-top:18px;}
-  @media(max-width:559px){.appbar-row{align-items:flex-start}.appbar-actions{flex-direction:column;align-items:flex-end}.save-state{font-size:11px}.btn{width:100%;}.navbar{flex-wrap:wrap}.step-dot span{font-size:10px}}
+  @media(max-width:559px){.appbar-row{align-items:flex-start}.appbar-actions{flex-direction:column;align-items:flex-end}.save-state{font-size:11px}.btn{width:100%;}.navbar{flex-wrap:wrap}.step-dot span{font-size:10px}.algo-step{padding:11px}.algo-sentence{font-size:13px}}
 
   /* result */
   .result-card{border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;background:var(--white);}
@@ -296,31 +305,43 @@ function viewStory(){
     + navHTML();
 }
 
+function algoSentence(r){
+  return '만약 <b>'+plainBlank(r.screen)+'</b> 화면에서 <b>'+plainBlank(r.action)+'</b> 하면,<br>'
+    + '앱은 <b>'+plainBlank(r.reaction)+'</b> 하고, 그래서 사용자는 <b>'+plainBlank(r.result)+'</b>.';
+}
+
 function rowCardHTML(r, i){
   var single = data.rows.length<=1;
   return '<div class="rowcard" data-row="'+i+'">'
-    + '<div class="rc-head"><span class="rc-title"><span class="rc-num">'+(i+1)+'</span>살펴본 화면 '+(i+1)+'</span>'
-      + (single? '' : '<button class="icon-btn" data-del="'+i+'" aria-label="이 화면 삭제"><span class="material-icons-outlined">delete_outline</span></button>')
+    + '<div class="rc-head"><span class="rc-title"><span class="rc-num">'+(i+1)+'</span>알고리즘 흐름 '+(i+1)+'</span>'
+      + (single? '' : '<button class="icon-btn" data-del="'+i+'" aria-label="이 흐름 삭제"><span class="material-icons-outlined">delete_outline</span></button>')
     + '</div>'
-    + '<div class="field"><label><span class="step-num-tag">1</span>화면에 무엇이 있나요?</label>'
-      + '<input class="input" data-f="screen" type="text" placeholder="예) 검색창" value="'+esc(r.screen)+'"/></div>'
-    + '<div class="field"><label><span class="step-num-tag">2</span>사용자는 무엇을 하나요?</label>'
-      + '<input class="input" data-f="action" type="text" placeholder="예) 장소 이름을 입력한다" value="'+esc(r.action)+'"/></div>'
-    + '<div class="field"><label><span class="step-num-tag">3</span>앱에서는 어떤 일이 일어나나요?</label>'
-      + '<input class="input" data-f="reaction" type="text" placeholder="예) 관련 장소를 찾아 보여 준다" value="'+esc(r.reaction)+'"/></div>'
-    + '<div class="field" style="margin-bottom:0"><label><span class="step-num-tag">4</span>사용자는 무엇을 얻게 되나요?</label>'
-      + '<input class="input" data-f="result" type="text" placeholder="예) 원하는 장소 정보를 알게 된다" value="'+esc(r.result)+'"/></div>'
+    + '<div class="algo-card" aria-label="화면에서 결과까지 이어지는 알고리즘 작성틀">'
+      + '<div class="algo-step"><label><span class="algo-badge">📱</span>1. 화면에서 찾은 버튼이나 칸</label>'
+        + '<input class="input" data-f="screen" type="text" placeholder="예) 검색창, 저장 버튼, 사진 선택 칸" value="'+esc(r.screen)+'"/>'
+        + '<span class="algo-hint">눈에 보이는 것을 하나만 고르면 쉬워요.</span></div>'
+      + '<div class="algo-step"><label><span class="algo-badge">👆</span>2. 사용자가 하는 행동</label>'
+        + '<input class="input" data-f="action" type="text" placeholder="예) 장소 이름을 입력한다, 저장 버튼을 누른다" value="'+esc(r.action)+'"/>'
+        + '<span class="algo-hint">누른다 · 입력한다 · 고른다처럼 동작 말로 써요.</span></div>'
+      + '<div class="algo-step"><label><span class="algo-badge">⚙️</span>3. 앱이 처리하는 일</label>'
+        + '<input class="input" data-f="reaction" type="text" placeholder="예) 관련 장소를 찾아 보여 준다" value="'+esc(r.reaction)+'"/>'
+        + '<span class="algo-hint">앱 안에서 자동으로 일어나는 반응을 생각해요.</span></div>'
+      + '<div class="algo-step"><label><span class="algo-badge">🎁</span>4. 사용자가 얻는 결과</label>'
+        + '<input class="input" data-f="result" type="text" placeholder="예) 원하는 장소 정보를 알게 된다" value="'+esc(r.result)+'"/>'
+        + '<span class="algo-hint">마지막에 내가 알게 되거나 할 수 있게 된 것을 써요.</span></div>'
+    + '</div>'
+    + '<div class="algo-sentence" data-preview="'+i+'">'+algoSentence(r)+'</div>'
   + '</div>';
 }
 
 function viewAnalysis(){
   return ''
     + '<span class="chip"><span class="material-icons-outlined">touch_app</span>활동 2</span>'
-    + '<h2 class="step-title">누르면 어떻게 될까?</h2>'
-    + '<p class="step-lead">앱의 한 화면을 골라 네 가지 질문으로 차근차근 분석해요. 화면을 여러 개 살펴봤다면 추가할 수 있어요.</p>'
-    + '<details class="example"><summary><span class="material-icons-outlined">lightbulb</span>예시 분석 보기 — 지도 앱 검색창</summary>'
-      + '<div class="ex-body"><b>① 화면에 있는 것</b> 검색창 &nbsp;<b>② 사용자가 하는 일</b> 장소 이름을 입력한다<br>'
-      + '<b>③ 앱에서 일어나는 일</b> 관련 장소를 찾아 보여 준다 &nbsp;<b>④ 사용자가 얻는 것</b> 원하는 장소 정보를 알게 된다</div></details>'
+    + '<h2 class="step-title">알고리즘처럼 차례대로 써 봐요</h2>'
+    + '<p class="step-lead">앱의 작동을 <b>보이는 것 → 내가 하는 일 → 앱이 하는 일 → 내가 얻는 것</b> 순서로 연결해요. 한 칸에 한 가지씩만 쓰면 문장이 자동으로 만들어져요.</p>'
+    + '<details class="example" open><summary><span class="material-icons-outlined">lightbulb</span>예시 알고리즘 보기 — 지도 앱 검색창</summary>'
+      + '<div class="ex-body"><b>📱 화면</b> 검색창 → <b>👆 행동</b> 장소 이름을 입력한다 → <b>⚙️ 앱 처리</b> 관련 장소를 찾아 보여 준다 → <b>🎁 결과</b> 원하는 장소 정보를 알게 된다<br>'
+      + '<b>문장</b> 만약 검색창에서 장소 이름을 입력하면, 앱은 관련 장소를 찾아 보여 주고, 그래서 사용자는 원하는 장소 정보를 알게 됩니다.</div></details>'
     + '<div id="rows">' + data.rows.map(rowCardHTML).join("") + '</div>'
     + (data.rows.length<4 ? '<button class="addrow" id="addRow"><span class="material-icons-outlined">add_circle_outline</span>다른 화면도 분석하기</button>' : '')
     + navHTML();
@@ -364,7 +385,8 @@ function viewResult(){
       + '<div class="kv"><b>① 화면에 있는 것</b><span class="v">'+val(r.screen)+'</span></div>'
       + '<div class="kv"><b>② 사용자가 하는 일</b><span class="v">'+val(r.action)+'</span></div>'
       + '<div class="kv"><b>③ 앱에서 일어나는 일</b><span class="v">'+val(r.reaction)+'</span></div>'
-      + '<div class="kv"><b>④ 사용자가 얻는 것</b><span class="v">'+val(r.result)+'</span></div></div>';
+      + '<div class="kv"><b>④ 사용자가 얻는 것</b><span class="v">'+val(r.result)+'</span></div>'
+      + '<div class="summ"><p>만약 <b>'+esc(plain(r.screen,"________"))+'</b>에서 <b>'+esc(plain(r.action,"________"))+'</b> 하면, 앱은 <b>'+esc(plain(r.reaction,"________"))+'</b> 하고, 사용자는 <b>'+esc(plain(r.result,"________"))+'</b>.</p></div></div>';
   }).join("");
 
   var card = '<div class="result-card" id="resultCard">'
@@ -377,7 +399,7 @@ function viewResult(){
         + '<div class="kv"><b>① 쓰기 전</b><span class="v">'+val(s.before)+'</span></div>'
         + '<div class="kv"><b>② 쓰는 중</b><span class="v">'+val(s.during)+'</span></div>'
         + '<div class="kv"><b>③ 쓴 뒤</b><span class="v">'+val(s.after)+'</span></div></div>'
-      + '<div class="rsec"><h4><span class="tag" style="background:var(--pastel-blue);color:var(--pastel-blue-dark)">활동 2</span> 누르면 어떻게 될까? — 앱 작동 분석</h4>'+rowsHTML+'</div>'
+      + '<div class="rsec"><h4><span class="tag" style="background:var(--pastel-blue);color:var(--pastel-blue-dark)">활동 2</span> 알고리즘처럼 보는 앱 작동 분석</h4>'+rowsHTML+'</div>'
       + '<div class="rsec"><h4><span class="tag" style="background:var(--pastel-green);color:var(--pastel-green-dark)">활동 3</span> 앱 연구원의 한마디</h4>'
         + '<div class="summ"><p>'
           + '• 이 앱의 좋은 점은 <b>'+plain(rv.good,"________")+'</b> 입니다.<br>'
@@ -420,13 +442,14 @@ function buildText(){
   t.push("- 장면 2 (앱을 쓰는 중) : "+plain(s.during,"( )"));
   t.push("- 장면 3 (앱을 쓴 뒤) : "+plain(s.after,"( )"));
   t.push("");
-  t.push("[활동 2] 누르면 어떻게 될까? — 앱 작동 분석");
+  t.push("[활동 2] 알고리즘처럼 보는 앱 작동 분석");
   d.rows.forEach(function(r,i){
     t.push("■ 살펴본 화면 "+(i+1));
     t.push("  1) 화면에 있는 것 : "+plain(r.screen,"( )"));
     t.push("  2) 사용자가 하는 일 : "+plain(r.action,"( )"));
     t.push("  3) 앱에서 일어나는 일 : "+plain(r.reaction,"( )"));
     t.push("  4) 사용자가 얻는 것 : "+plain(r.result,"( )"));
+    t.push("  → 알고리즘 문장 : 만약 "+plain(r.screen,"( )")+"에서 "+plain(r.action,"( )")+" 하면, 앱은 "+plain(r.reaction,"( )")+" 하고, 사용자는 "+plain(r.result,"( )")+".");
   });
   t.push("");
   t.push("[활동 3] 앱 연구원의 한마디");
@@ -714,7 +737,7 @@ function bindAnalysis(){
   Array.prototype.forEach.call(rowsEl.querySelectorAll(".rowcard"), function(rc){
     var idx=parseInt(rc.dataset.row,10);
     Array.prototype.forEach.call(rc.querySelectorAll("input[data-f]"), function(inp){
-      inp.addEventListener("input", function(){ data.rows[idx][inp.dataset.f]=inp.value; save(); });
+      inp.addEventListener("input", function(){ data.rows[idx][inp.dataset.f]=inp.value; var pv=rc.querySelector("[data-preview]"); if(pv){ pv.innerHTML=algoSentence(data.rows[idx]); } save(); });
     });
     var del=rc.querySelector("[data-del]");
     if(del){ del.addEventListener("click", function(){ data.rows.splice(idx,1); save(); showStep(); }); }
